@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Home</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+</head>
+<body>
+    <div>
+        <li><a href='email_test'>email test</a></li>
+        {% if user.is_authenticated %}
+            <li>Hello {{user.first_name}}</li>
+            <li><a href='accounts/logout'>Logout</a></li>
+        {% else %}
+            <li><a href='accounts/register'>Register</a></li>
+            <li><a href='accounts/login'>Login</a></li>
+        {% endif %}
+    </div>
+    <div>
+        
+        <h1>Carparks</h1>
+        {% for carpark_data_object_list in carparks %}
+            <h3>{{carpark_data_object_list.0.carpark.name}}</h3> 
+            There are {{carpark_data_object_list.0.carpark.booked_places}} places out of {{carpark_data_object_list.0.carpark.total_places}} left.<br>
+            {%for carpark_data_object in carpark_data_object_list %}
+                
+            
+                <table>
+                    <tbody>
+                        <thead>
+                            <tr>
+                                <td>Times</td>
+                                <td>{{carpark_data_object.date.isoformat}}</td>
+                            </tr>
+                        </thead>
+                        {%for slot, value in carpark_data_object.time_slots.items%}
+                    
+                            <tr>
+                                <td>{{slot}}</td>
+                                <td>{{value}}</td>
+                            </tr>
+                    
+                    
+                        {%endfor%}
+                    </tbody>
+                </table>
+            {%endfor%}
+        {%endfor%}
+    </div>
+    <div>
+        {% if user.is_authenticated %}
+            <h1>Cars</h1>
+            {% if not is_car_empty %}
+                {% for car in cars %}
+                    <h3>{{car.car_number_plate}}</h3> 
+                    This is a {{car.car_colour}} car made by {{car.manufacturer}}<br>
+                {% endfor %}
+            <br>
+                
+            {% endif %}
+            <a href='accounts/add_car'>Add Car</a><br>
+        {% endif %}
+    </div>
+    <div>
+        {% if user.is_authenticated %}
+            <h1>Bookings</h1>
+            {% if not is_booking_empty %}
+                {%for booking in bookings %}
+                    A booking with the numberplate {{booking.car.car_number_plate}} has a booking in the {{booking.carpark.name}} car park starting on {{booking.start_datetime.day}}/{{booking.start_datetime.month}}/{{booking.start_datetime.year}} at {{booking.start_datetime.hour}}:{{booking.start_datetime.minute}} and ending on {{booking.end_datetime.day}}/{{booking.end_datetime.month}}/{{booking.end_datetime.year}} at {{booking.end_datetime.hour}}:{{booking.end_datetime.minute}}.<br>
+                {% endfor %}    
+            {% endif %}
+            <a href='accounts/add_booking'>Add Booking</a><br>
+        {% endif %}
+    </div>
+</body>
+</html>
