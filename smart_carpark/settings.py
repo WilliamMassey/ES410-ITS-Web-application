@@ -75,15 +75,23 @@ WSGI_APPLICATION = 'smart_carpark.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'SmartCarpark',
-        'USER': 'ES410',
-        'PASSWORD':'SmartCarpark',
-        'HOST' : 'localhost'
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'mydatabase',
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'SmartCarpark',
+#         'USER': 'ES410',
+#         'PASSWORD':'SmartCarpark',
+#         'HOST' : 'localhost'
+#     }
+# }
 
 
 # Password validation
