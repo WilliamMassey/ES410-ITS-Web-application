@@ -32,7 +32,7 @@ def home(request):
         is_booking_empty = False
     else: 
         is_booking_empty = True
-    
+    print("car colour " +str(cars[0].colour))
     return render(request, 'index.html', {'carparks' : carpark_list, 'cars' : cars, 'is_car_empty' : is_car_empty, 'is_booking_empty' : is_booking_empty, 'bookings': bookings})
 
 def email_test(request):

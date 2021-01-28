@@ -54,7 +54,7 @@
             {% if not is_car_empty %}
                 {% for car in cars %}
                     <h3>{{car.car_number_plate}}</h3> 
-                    This is a {{car.car_colour}} car made by {{car.manufacturer}}<br>
+                    This is a {{car.get_colour_display}} car made by {{car.manufacturer}}<br>
                 {% endfor %}
             <br>
                 

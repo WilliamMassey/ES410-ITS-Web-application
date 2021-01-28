@@ -11,14 +11,14 @@ class Details(models.Model):
 
 class Car(models.Model):
     CAR_COLOURS = (
-        ('b', 'BLUE'),
-        ('r', 'RED'),
-        ('g', 'GREEN'),
-        ('y', 'YELLOW'),
-        ('o', 'ORANGE'),
-        ('s', 'BLACK'),
-        ('n', 'BROWN'),
-        ('w', 'WHITE')
+        ('b', 'blue'),
+        ('r', 'red'),
+        ('g', 'green'),
+        ('y', 'yellow'),
+        ('o', 'orange'),
+        ('s', 'black'),
+        ('n', 'brown'),
+        ('w', 'white')
     )
     car_number_plate = models.CharField(max_length = 8, primary_key = True, default = None)
     colour = models.CharField(max_length = 1, default = 's', choices = CAR_COLOURS)
