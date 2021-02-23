@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Add Booking</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+</head>
+<body>
+    <form action='add_booking' method='post'>
+        {% csrf_token %}
+        Start Time and Date<br>
+        <input type = "datetime-local" name="start_datetime">{% for message in messages %}{% if message.extra_tags == 'start_datetime' %}{{message}} {%endif%}{%endfor%}<br>
+        End Time and Date<br>
+        <input type = "datetime-local" name="end_datetime">{% for message in messages %}{% if message.extra_tags == 'end_datetime' %}{{message}} {%endif%}{%endfor%}<br>
+
+        <select name = "car">
+            <option value="x" >Please Select a Car</option>
+            {% for car in cars %}
+                <option value={{car}} >{{car}}</option>
+            {% endfor %}
+        </select>{% for message in messages %}{% if message.extra_tags == 'car' %}{{message}} {%endif%}{%endfor%}<br>
+        <select name='carpark'>
+            <option value="x" >Please Select a Carpark</option>
+            {% for carpark in carparks %}
+                <option value={{carpark.name}} >{{carpark.name}}</option>
+            {% endfor %}
+        </select>{% for message in messages %}{% if message.extra_tags == 'carpark' %}{{message}} {%endif%}{%endfor%}<br>
+        <input type='Submit'>
+            
+    </form>
+</body>
+</html>
