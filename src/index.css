@@ -1,10 +1,15 @@
 @import url("https://fonts.googleapis.com/css?family=Fira+Sans:400,500,600,700,800");
 
+.leaflet-container {
+  width: 75%;
+  height: 75vh;
+}
+
 * {
   box-sizing: border-box;
 }
 body {
-  background: #611bb1 !important;
+  background: whitesmoke !important;
   min-height: 100vh;
   display: flex;
   font-weight: 400;

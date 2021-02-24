@@ -1,0 +1,87 @@
+{
+	"type": "FeatureCollection",
+	"crs": {
+		"type": "name",
+		"properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" }
+	},
+	"features": [
+		{
+			"type": "Feature",
+			"properties": {
+				"CARPARK_ID": 1,
+				"NAME": "Sports and Wellness Hub Car Park",
+				"DESCRIPTION": "140 Spaces"
+			},
+	
+			"geometry": {
+				"type": "Point",
+				"coordinates": [52.379084, -1.567667]
+			}
+		},
+		{
+			"type": "Feature",
+			"properties": {
+				"CARPARK_ID": 2,
+				"NAME": "Science Car Park",
+				"DESCRIPTION": "100 Spaces"
+			},
+	
+			"geometry": {
+				"type": "Point",
+				"coordinates": [52.383074, -1.564230]
+			}
+		},
+		{
+			"type": "Feature",
+			"properties": {
+				"CARPARK_ID": 3,
+				"NAME": "Old Sport Centre Car Park",
+				"DESCRIPTION": "200 Spaces"
+			},
+	
+			"geometry": {
+				"type": "Point",
+				"coordinates": [52.382402, -1.559072]
+			}
+		},
+		{
+			"type": "Feature",
+			"properties": {
+				"CARPARK_ID": 4,
+				"NAME": "Westwood Games Hall Car Park",
+				"DESCRIPTION": "200 Spaces"
+			},
+	
+			"geometry": {
+				"type": "Point",
+				"coordinates": [52.386169, -1.565688]
+			}
+		},
+		{
+			"type": "Feature",
+			"properties": {
+				"CARPARK_ID": 5,
+				"NAME": "Tennic Centre Car Park",
+				"DESCRIPTION": "200 Spaces"
+			},
+	
+			"geometry": {
+				"type": "Point",
+				"coordinates": [52.388863, -1.564517]
+			}
+		},
+		{
+			"type": "Feature",
+			"properties": {
+				"CARPARK_ID": 6,
+				"NAME": "Argent Court Car Park",
+				"DESCRIPTION": "200 Spaces"
+			},
+	
+			"geometry": {
+				"type": "Point",
+				"coordinates": [52.389007, -1.559237]
+			}
+		}
+	]
+}

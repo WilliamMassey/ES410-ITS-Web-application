@@ -40,7 +40,7 @@ function App() {
           <a href="https://warwick.ac.uk/" target ="_blank" rel="noreferrer">
             <img src={Logo} width="100" alt="warwick logo" />
           </a>
-          <Link className="navbar-brand" to={"/home"}>ES410:Smart Car Park</Link>
+          <Link className="navbar-brand" to={"/home"}>ES410: Smart Car Park</Link>
           <div className="collapse navbar-collapse" id="navbarTogglerDemo02">
             <ul className="navbar-nav ml-auto">
               <li className="nav-item">
@@ -64,7 +64,7 @@ function App() {
             <Route path="/home" component={Home} />
             <Route path="/about" component={About} />
             <Route path="/sign-in" render={routeProps => <LoginForm {...routeProps} Login={Login} error={error} />} />
-            <Route path="/sign-up" component={SignUp} />
+            <Route path="/si gn-up" component={SignUp} />
           </Switch>
     </div></Router>
   );
