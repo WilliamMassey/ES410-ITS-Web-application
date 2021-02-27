@@ -18,15 +18,46 @@ class CarSerializer(serializers.ModelSerializer):
   model = Car
   fields = '__all__'
 
+
+class BookingDetailSerializer(serializers.Serializer):
+  car_number_plate = serializers.CharField(max_length = 7)
+  carpark_id = serializers.CharField(max_length = 3)
+  start_datetime = serializers.DateTimeField()
+  end_datetime = serializers.DateTimeField()
+
 class BookingSerializer(serializers.ModelSerializer):
  class Meta():
   model = Booking
-  fields = ['user', 'car', 'start_datetime', 'end_datetime', 'carpark']
- user = UserSerializer(required = False)
- car = CarSerializer()
- start_datetime = serializers.DateTimeField()
- end_datetime = serializers.DateTimeField()
- carpark = CarparkSerializer(required = False)
+  fields = '__all__'
+#  car_number_plate = serializers.CharField(max_length = 7)
+#  start_datetime = serializers.DateTimeField()
+#  end_datetime = serializers.DateTimeField()
+#  carpark_name = serializers.CharField(max_length = 30)
+#  def to_internal_value(self,data):
+#   try:
+#      data['user'] = data['user']['id']
+#   except TypeError:
+#     pass
+#   try:
+#      data['carpark'] = data['carpark']['id']
+#   except TypeError:
+#     pass
+#   try:
+#      data['car'] = data['car']['car_number_plate']
+#   except TypeError:
+#     pass
+#   return super(PlayerSerializer, self).to_internal_value(data)
+
+#   def to_representation(self,instance):
+#     return ReadBookingSerializer(instance).data
+
+# class ReadBookingSerializer(serializers.ModelSerializer):
+#   user = UserSerializer()
+#   car = CarSerializer()
+#   carpark = CarparkSerializer()
+#   class Meta(BookingSerializer.Meta):
+#     pass
+
  
 
 

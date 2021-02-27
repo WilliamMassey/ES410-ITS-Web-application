@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from .serializers import CarSerializer, BookingSerializer, UserSerializer
+from .serializers import CarSerializer, BookingSerializer, UserSerializer, BookingDetailSerializer
 # Create your views here.
 
 
@@ -45,9 +45,11 @@ def car_view(request):
 def car_detail(request, car_number_plate):
     if request.user.is_authenticated:
 
-        numberplates = User_Car_Mapping.objects.filter(user__exact = request.user).values_list('car', flat = True)
+        numberplates = User_Car_Mapping.objects.filter(user__exact = request.user).filter(car__car_number_plate = car_number_plate).values_list('car', flat = True)
         cars = Car.objects.filter(car_number_plate__in = numberplates)
-        serializer = CarSerializer(cars, many = False)
+        if len(cars) == 0:
+            return Response("ERROR: YOU HAVE NO CAR WITH THE NUMBER PLATE " + str(car_number_plate))
+        serializer = CarSerializer(cars[0], many = False)
         # if empty do what? or easier to do on front end
         return Response(serializer.data)
     else:
@@ -115,7 +117,6 @@ def car_delete(request, car_number_plate):
         return Response("ERROR: YOU ARE NOT LOGGED IN")
 
 
-
 #### Booking ####
 @api_view(['GET'])
 def booking_api(request):
@@ -130,26 +131,28 @@ def booking_api(request):
 
 @api_view(['GET'])
 def booking_view(request):
-    print("")
     if request.user.is_authenticated:
         
-        bookings = Booking.objects.filter(user__exact = request.user)
-        serializer = CarSerializer(bookings, many = True)
-        print("user is validated")
-        print(bookings)
-        print(serializer.validated_data)
+        bookings = (Booking.objects.filter(user__exact = request.user))
+        print("bookings " + str(bookings))
+        serializer = BookingSerializer(data = bookings, many = True)
+        serializer.is_valid()
         # if empty do what? or easier to do on front end
         return Response(serializer.data)
     else:
         return Response("ERROR: YOU ARE NOT LOGGED IN")
 
 @api_view(['GET'])
-def booking_detail(request, car_number_plate):
+def booking_detail(request, pk):
     if request.user.is_authenticated:
 
-        numberplates = User_Car_Mapping.objects.filter(user__exact = request.user).values_list('car', flat = True)
-        cars = Car.objects.filter(car_number_plate__in = numberplates)
-        serializer = CarSerializer(cars, many = False)
+        booking = Booking.objects.filter(user = request.user).filter(id = pk)
+        if len(booking) == 0:
+            return Response("ERROR: THERE IS NO BOOKING WITH PK " + str(pk))
+        print(booking[0])
+        serializer = BookingSerializer(booking, many = True)
+        
+        print(serializer.data)
         # if empty do what? or easier to do on front end
         return Response(serializer.data)
     else:
@@ -158,13 +161,30 @@ def booking_detail(request, car_number_plate):
 @api_view(['POST'])
 def booking_create(request):
     if request.user.is_authenticated:
-        serializer = BookingSerializer(data = request.data)
+        serializer = BookingDetailSerializer(data = request.data)
         if serializer.is_valid():
-            serializer.save()
-            print(serializer.istance)
-            booking = Booking.objects.get(id = serializer.istance.id)
-            booking.user = request.user
-            return Response(serializer.data)
+            car_number_plate = serializer.data['car_number_plate']
+            carpark_id = serializer.data['carpark_id']
+            start_datetime = serializer.data['start_datetime']
+            end_datetime = serializer.data['end_datetime']
+            numberplates = User_Car_Mapping.objects.filter(user__exact = request.user).filter(car__car_number_plate = car_number_plate).values_list('car', flat = True)
+            try:
+                car = Car.objects.get(car_number_plate__in = numberplates)
+            except DoesNotExist:
+                return Response("ERROR: CAR NUMBER PLATE IS INVALID")
+            
+
+            try:
+                carpark = Carpark.objects.get(id = carpark_id)
+            except DoesNotExist:
+                return Response("ERROR: CARPARK ID IS INVALID")
+            
+
+            
+            booking = Booking(user= request.user, car= car, carpark= carpark, start_datetime=start_datetime,end_datetime=end_datetime)
+            booking.save()
+            serializer_to_return = BookingSerializer(booking, many = False)
+            return Response(serializer_to_return.data)
         else:
             return Response(serializer.errors)
     else:
@@ -172,7 +192,7 @@ def booking_create(request):
     
 
 @api_view(['POST', 'GET'])
-def booking_update(request, car_number_plate):
+def booking_update(request, pk):
     if request.user.is_authenticated:
         numberplates = User_Car_Mapping.objects.filter(user__exact = request.user).values_list('car', flat = True)
         cars = Car.objects.filter(car_number_plate__in = numberplates)
@@ -198,26 +218,18 @@ def booking_update(request, car_number_plate):
 
 
 @api_view(['DELETE'])
-def booking_delete(request, car_number_plate):
+def booking_delete(request, pk):
     if request.user.is_authenticated:
-        numberplates = User_Car_Mapping.objects.filter(user__exact = request.user).values_list('car', flat = True)
-        cars = Car.objects.filter(car_number_plate__in = numberplates)
-        can_change_car = False
-        for car in cars:
-            if car.car_number_plate == car_number_plate:
-                can_change_car = True
-        if can_change_car:
-            #delete mapping as well 
-            car = Car.objects.get(car_number_plate=car_number_plate)
-            car.delete()
-            return Response(serializer.data)
-        else:
-            car_check =  Car.objects.filter(car_number_plate = car_number_plate)
-            x = len(car_check)
-            if x == 0:
-                return Response("ERROR: THIS CAR DOESN'T EXIST")
-            else:
-                return Response("ERROR: YOU ARE ABLE TO CHANGE THIS CAR")
+        try:
+            booking = Booking.ojbects.get(id = pk)
+        except DoesNotExist:
+            return Response("Booking doesn't exist")
+        booking_user = booking.user
+        if booking_user != request.user:
+            return Response("ERROR: You do no have acess to this booking")
+        
+        booking.delete()
+        retunr Response("booking id " + str(pk) + " has been successfully deleted")
     else: 
         return Response("ERROR: YOU ARE NOT LOGGED IN")
 
