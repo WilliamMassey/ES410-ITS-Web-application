@@ -20,7 +20,7 @@ class Car(models.Model):
         ('n', 'brown'),
         ('w', 'white')
     )
-    car_number_plate = models.CharField(max_length = 8, primary_key = True, default = None)
+    car_number_plate = models.CharField(max_length = 7, primary_key = True, default = None)
     colour = models.CharField(max_length = 1, default = 's', choices = CAR_COLOURS)
     manufacturer = models.CharField(max_length = 20, default = None)
 
