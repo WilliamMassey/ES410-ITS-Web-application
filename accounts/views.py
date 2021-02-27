@@ -7,9 +7,227 @@ from home.models  import Carpark
 from .func import conv_html_datetime
 from datetime import datetime, timedelta
 
-#from datetime import today
+#rest framework imports
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
+from .serializers import CarSerializer, BookingSerializer, UserSerializer
 # Create your views here.
+
+
+@api_view(['GET'])
+def car_api(request):
+    api_urls = {
+        'View': '/car-view/',
+        'Detail': '/car-detail/<str:car_number_plate>/',
+        'Create': '/car-create/',
+        'Update': '/car-update/<str:car_number_plate>/',
+        'Delete': '/car-delete/<str:car_number_plate>/',
+    }
+    return Response(api_urls)
+
+@api_view(['GET'])
+def car_view(request):
+    if request.user.is_authenticated:
+        
+        numberplates = User_Car_Mapping.objects.filter(user__exact = request.user).values_list('car', flat = True)
+        cars = Car.objects.filter(car_number_plate__in = numberplates)
+        serializer = CarSerializer(data = cars, many = True)
+        print("user is validated")
+        print(cars)
+        serializer.is_valid()
+        print(serializer.validated_data)
+        # if empty do what? or easier to do on front end
+        return Response(serializer.data)
+    else:
+        return Response("ERROR: YOU ARE NOT LOGGED IN")
+
+@api_view(['GET'])
+def car_detail(request, car_number_plate):
+    if request.user.is_authenticated:
+
+        numberplates = User_Car_Mapping.objects.filter(user__exact = request.user).values_list('car', flat = True)
+        cars = Car.objects.filter(car_number_plate__in = numberplates)
+        serializer = CarSerializer(cars, many = False)
+        # if empty do what? or easier to do on front end
+        return Response(serializer.data)
+    else:
+        return Response("ERROR: YOU ARE NOT LOGGED IN")
+
+@api_view(['POST'])
+def car_create(request):
+    if request.user.is_authenticated:
+        print("request.data" + str(request.data))
+        serializer = CarSerializer(data = request.data)
+        print("inital data " + str(serializer.initial_data))
+        if serializer.is_valid():
+            car =serializer.create(serializer.validated_data)
+            print("inital data " + str(serializer.initial_data))
+            print(car)
+            mapping = User_Car_Mapping(car = car, user = request.user)
+            mapping.save()
+        return Response(serializer.data)
+    else:
+        return Response("ERROR: YOU ARE NOT LOGGED IN")
+    
+# TESTED, need to format errors properly need to ask rosler 
+@api_view(['POST', 'GET'])
+def car_update(request, car_number_plate):
+    if request.user.is_authenticated:
+        numberplates = User_Car_Mapping.objects.filter(user__exact = request.user).values_list('car', flat = True)
+        cars = Car.objects.filter(car_number_plate__in = numberplates)
+        can_change_car = False
+        for car in cars:
+            if car.car_number_plate == car_number_plate:
+                can_change_car = True
+        if can_change_car:
+            serializer = CarSerializer(instance = car,data = request.data)
+            if serializer.is_valid():
+                serializer.save()
+                print("serializer was valid")
+            return Response(serializer.data)
+        else:
+            car_check =  Car.objects.filter(car_number_plate = car_number_plate)
+            x = len(car_check)
+            if x == 0:
+                return Response("ERROR: THIS CAR DOESN'T EXIST")
+            else:
+                return Response("ERROR: YOU ARE ABLE TO CHANGE THIS CAR")
+    else:
+        return Response("ERROR: YOU ARE NOT LOGGED IN")
+
+
+
+@api_view(['DELETE'])
+def car_delete(request, car_number_plate):
+    if request.user.is_authenticated:
+        numberplates = User_Car_Mapping.objects.filter(user__exact = request.user).values_list('car', flat = True)
+        cars = Car.objects.filter(car_number_plate__in = numberplates)
+        can_change_car = False
+        for car in cars:
+            if car.car_number_plate == car_number_plate:
+                can_change_car = True
+        if can_change_car:
+            #delete mapping as well 
+            car = Car.objects.get(car_number_plate=car_number_plate)
+            car.delete()
+            return Response(serializer.data)
+        else:
+            car_check =  Car.objects.filter(car_number_plate = car_number_plate)
+            x = len(car_check)
+            if x == 0:
+                return Response("ERROR: THIS CAR DOESN'T EXIST")
+            else:
+                return Response("ERROR: YOU ARE ABLE TO CHANGE THIS CAR")
+    else: 
+        return Response("ERROR: YOU ARE NOT LOGGED IN")
+
+
+
+#### Booking ####
+@api_view(['GET'])
+def booking_api(request):
+    api_urls = {
+        'View': '/booking-view/',
+        'Detail': '/booking-detail/<str:pk>/',
+        'Create': '/booking-create/',
+        'Update': '/booking-update/<str:pk>/',
+        'Delete': '/booking-delete/<str:pk>/',
+    }
+    return Response(api_urls)
+
+@api_view(['GET'])
+def booking_view(request):
+    print("")
+    if request.user.is_authenticated:
+        
+        bookings = Booking.objects.filter(user__exact = request.user)
+        serializer = CarSerializer(bookings, many = True)
+        print("user is validated")
+        print(bookings)
+        print(serializer.validated_data)
+        # if empty do what? or easier to do on front end
+        return Response(serializer.data)
+    else:
+        return Response("ERROR: YOU ARE NOT LOGGED IN")
+
+@api_view(['GET'])
+def booking_detail(request, car_number_plate):
+    if request.user.is_authenticated:
+
+        numberplates = User_Car_Mapping.objects.filter(user__exact = request.user).values_list('car', flat = True)
+        cars = Car.objects.filter(car_number_plate__in = numberplates)
+        serializer = CarSerializer(cars, many = False)
+        # if empty do what? or easier to do on front end
+        return Response(serializer.data)
+    else:
+        return Response("ERROR: YOU ARE NOT LOGGED IN")
+
+@api_view(['POST'])
+def booking_create(request):
+    if request.user.is_authenticated:
+        serializer = BookingSerializer(data = request.data)
+        if serializer.is_valid():
+            serializer.save()
+            print(serializer.istance)
+            booking = Booking.objects.get(id = serializer.istance.id)
+            booking.user = request.user
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors)
+    else:
+        return Response("ERROR: YOU ARE NOT LOGGED IN")
+    
+
+@api_view(['POST', 'GET'])
+def booking_update(request, car_number_plate):
+    if request.user.is_authenticated:
+        numberplates = User_Car_Mapping.objects.filter(user__exact = request.user).values_list('car', flat = True)
+        cars = Car.objects.filter(car_number_plate__in = numberplates)
+        can_change_car = False
+        for car in cars:
+            if car.car_number_plate == car_number_plate:
+                can_change_car = True
+        if can_change_car:
+            serializer = CarSerializer(instance = car,data = request.data)
+            if serializer.is_valid():
+                serializer.save()
+                print("serializer was valid")
+            return Response(serializer.data)
+        else:
+            car_check =  Car.objects.filter(car_number_plate = car_number_plate)
+            x = len(car_check)
+            if x == 0:
+                return Response("ERROR: THIS CAR DOESN'T EXIST")
+            else:
+                return Response("ERROR: YOU ARE ABLE TO CHANGE THIS CAR")
+    else:
+        return Response("ERROR: YOU ARE NOT LOGGED IN")
+
+
+@api_view(['DELETE'])
+def booking_delete(request, car_number_plate):
+    if request.user.is_authenticated:
+        numberplates = User_Car_Mapping.objects.filter(user__exact = request.user).values_list('car', flat = True)
+        cars = Car.objects.filter(car_number_plate__in = numberplates)
+        can_change_car = False
+        for car in cars:
+            if car.car_number_plate == car_number_plate:
+                can_change_car = True
+        if can_change_car:
+            #delete mapping as well 
+            car = Car.objects.get(car_number_plate=car_number_plate)
+            car.delete()
+            return Response(serializer.data)
+        else:
+            car_check =  Car.objects.filter(car_number_plate = car_number_plate)
+            x = len(car_check)
+            if x == 0:
+                return Response("ERROR: THIS CAR DOESN'T EXIST")
+            else:
+                return Response("ERROR: YOU ARE ABLE TO CHANGE THIS CAR")
+    else: 
+        return Response("ERROR: YOU ARE NOT LOGGED IN")
 
 def accounts(request):
 
