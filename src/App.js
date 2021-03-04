@@ -61,10 +61,11 @@ function App() {
       </nav>
 
           <Switch>
+            <Route exact path="/" component={Home} />
             <Route path="/home" component={Home} />
             <Route path="/about" component={About} />
             <Route path="/sign-in" render={routeProps => <LoginForm {...routeProps} Login={Login} error={error} />} />
-            <Route path="/si gn-up" component={SignUp} />
+            <Route path="/sign-up" component={SignUp} />
           </Switch>
     </div></Router>
   );
