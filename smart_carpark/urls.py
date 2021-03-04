@@ -19,8 +19,8 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('home.urls')),
-    path('accounts/', include('accounts.urls'))
+    path('', include('home.urls')), # home app to the base url
+    path('accounts/', include('accounts.urls')) # accounts app to the /accounts/ url
 ]
 
 #urlpatterns += static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)

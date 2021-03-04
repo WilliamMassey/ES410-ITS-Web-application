@@ -2,19 +2,24 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.models import User, auth
 from django.contrib import messages
 from django.http import HttpResponse
+
+# Importing models from accounts app
 from .models import Car, User_Car_Mapping, Booking
+# importing carpark model from home model 
 from home.models  import Carpark
-from .func import conv_html_datetime
+
+from .func import conv_html_datetime # importing function used to 
 from datetime import datetime, timedelta
 
 #rest framework imports
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
+#importing accounts serializers 
 from .serializers import CarSerializer, BookingSerializer, UserSerializer, BookingDetailSerializer
 # Create your views here.
 
-
+# this defines the urls for the car API
 @api_view(['GET'])
 def car_api(request):
     api_urls = {
@@ -26,60 +31,58 @@ def car_api(request):
     }
     return Response(api_urls)
 
-@api_view(['GET'])
+# this returns serialized list of all of the cars that the current user has registered
+@api_view(['GET']) # Decorator of api_view
 def car_view(request):
-    if request.user.is_authenticated:
-        numberplates = User_Car_Mapping.objects.filter(user__exact = request.user).values_list('car', flat = True)
-        cars = Car.objects.filter(car_number_plate__in = numberplates)
-        print(cars)
-        serializer = CarSerializer(data = cars, many = True)
-        print("user is validated")
-        # if empty do what? or easier to do on front end
-        serializer.is_valid()
-        return Response(serializer.data)
+    if request.user.is_authenticated: # checking if the user is authenticated
+        numberplates = User_Car_Mapping.objects.filter(user__exact = request.user).values_list('car', flat = True) # obtain a list of numblates related to the user via the user car mappings
+        cars = Car.objects.filter(car_number_plate__in = numberplates) # use the number plates to get a query set of the car objects registerd to the user 
+        
+        serializer = CarSerializer(data = cars, many = True) # serialize the query set 
+        serializer.is_valid() # validate the data
+        return Response(serializer.data) # return the serialized data using the "Response" function
     else:
-        return Response("ERROR: YOU ARE NOT LOGGED IN")
+        return Response("ERROR: YOU ARE NOT LOGGED IN") # stand in response for testing, will be replaced with a serialized error object
 
 
 @api_view(['GET'])
 def car_detail(request, car_number_plate):
     if request.user.is_authenticated:
-
-        numberplates = User_Car_Mapping.objects.filter(user__exact = request.user).filter(car__car_number_plate = car_number_plate).values_list('car', flat = True)
-        cars = Car.objects.filter(car_number_plate__in = numberplates)
-        if len(cars) == 0:
-            return Response("ERROR: YOU HAVE NO CAR WITH THE NUMBER PLATE " + str(car_number_plate))
-        serializer = CarSerializer(cars[0], many = False)
+        numberplates = User_Car_Mapping.objects.filter(user__exact = request.user).filter(car__car_number_plate = car_number_plate).values_list('car', flat = True) # filters mappings by user -> filters resulting queryset by car number plate of -> converts the query set of UCM into a list of the numberplates 
+        cars = Car.objects.filter(car_number_plate__in = numberplates) # use the numberplates list to get a query set of the car objects registerd to the cars 
+        
+        if len(cars) == 0: # if the current user isn't registerd to the car, with the given numberplate cars will be an empty query set, so return an error  
+            return Response("ERROR: YOU HAVE NO CAR WITH THE NUMBER PLATE " + str(car_number_plate)) # stand in error response
+        elif len(cars) > 1: # if the query set has more than one element, potentially the same car has been mapped to twice
+            return Response("ERROR: A FAULT HAS OCCOURED, TOO MANY CARS HAVE BEEN RETURNED") # stand in error response
+        # remaining cases, the query sets will only have 1 element. 
+        serializer = CarSerializer(cars[0], many = False) # cars is a list so retrieve the element, then serialize it
         # if empty do what? or easier to do on front end
-        return Response(serializer.data)
+        return Response(serializer.data) # return serialized car
     else:
-        return Response("ERROR: YOU ARE NOT LOGGED IN")
+        return Response("ERROR: YOU ARE NOT LOGGED IN") # if the user isn't authenticated return standing error message
 
 @api_view(['POST'])
 def car_create(request):
-    if request.user.is_authenticated:
-        serializer = CarSerializer(data = request.data)
-        is_valid = serializer.is_valid()
-        if is_valid:
-            print("car is valid")
-            car =serializer.create(serializer.validated_data)
-            mapping = User_Car_Mapping(car = car, user = request.user)
-            mapping.save()
-            return Response(serializer.data)
+    if request.user.is_authenticated: # if user is authenticated 
+        serializer = CarSerializer(data = request.data) # get a serializer object from data
+        is_valid = serializer.is_valid() # checking the validity of the data recived 
+        if is_valid: # if the data is valid
+            car =serializer.create(serializer.validated_data) # using custom create method, save the serialized car and return it
+            mapping = User_Car_Mapping(car = car, user = request.user) # create the UCM using the currently logged in user and the car created
+            mapping.save() # save the UCM
+            return Response(serializer.data) # return the serialized object, as confirmation  
         else: 
-            print("car is invalid")
-            return Response(serializer.errors)
+            return Response(serializer.errors) # return the error response, outlining, what was wrong iwtht he serialized data 
     else:
         return Response("ERROR: YOU ARE NOT LOGGED IN")
     
-# TESTED, need to format errors properly need to ask rosler 
+# car_update function, uses the identical flow of car_create, however rather than using the save method on the serializer, getting the car object using the number plate then updating it. 
 @api_view(['POST', 'GET'])
-def car_update(request, car_number_plate):
+def car_update(request, car_number_plate): 
     if request.user.is_authenticated:
-        numberplates = User_Car_Mapping.objects.filter(user__exact = request.user).filter(car__car_number_plate = car_number_plate).values_list('car', flat = True)
+        numberplates = User_Car_Mapping.objects.filter(user__exact = request.user).filter(car__car_number_plate = car_number_plate).values_list('car', flat = True) # 
 
-        
-        print(len(numberplates))
         if len(numberplates) != 1:
             return Response("ERROR: NO OR MORE THAN ONE CAR WAS FOUND THAT FIT SEARCH PARAMETERS")
     
@@ -95,6 +98,7 @@ def car_update(request, car_number_plate):
     else:
         return Response("ERROR: YOU ARE NOT LOGGED IN")
 
+# Uses a similar method to car_details, however once the object is retrievied it is deleted using teh .delete() method, and it returns a message saying that the car object was successfully deleted. (the UCM is set to delete whenever the assosicated user or car is deleted)
 @api_view(['DELETE'])
 def car_delete(request, car_number_plate):
     if request.user.is_authenticated:
@@ -111,7 +115,7 @@ def car_delete(request, car_number_plate):
         car = Car.objects.filter(car_number_plate__in = numberplates)
         print(car)
         car.delete()
-        return Response("DELETED")
+        return Response("THE CAR WAS SUCCESSFULLY DELETED")
 
     else: 
         return Response("ERROR: YOU ARE NOT LOGGED IN")
@@ -229,7 +233,7 @@ def booking_delete(request, pk):
             return Response("ERROR: You do no have acess to this booking")
         
         booking.delete()
-        retunr Response("booking id " + str(pk) + " has been successfully deleted")
+        return Response("booking id " + str(pk) + " has been successfully deleted")
     else: 
         return Response("ERROR: YOU ARE NOT LOGGED IN")
 
