@@ -19,9 +19,9 @@ from rest_framework.response import Response
 from .serializers import CarSerializer, BookingSerializer
 
 
-def is_car_user_mapped(request, car_number_plate):
+def is_car_user_mapped(user, car_number_plate):
     try:
-        user_car_mapping = User_Car_Mapping.objects.get(user = request.user, car__car_number_plate = car_number_plate)
+        user_car_mapping = User_Car_Mapping.objects.get(user = user, car__car_number_plate = car_number_plate)
     except User_Car_Mapping.DoesNotExist:
         return False, Response("ERROR: CURRENT USER IS NOT MAPPED TO THE CAR WITH NUMBERPLATE " + car_number_plate)
     except User_Car_Mapping.MultipleObjectsReturned:
@@ -65,7 +65,7 @@ def car_view(request):
 @api_view(['GET'])
 def car_detail(request, car_number_plate):
     if request.user.is_authenticated: # check if the user is authenticated
-        (is_mapped, result) = is_car_user_mapped(request, car_number_plate)
+        (is_mapped, result) = is_car_user_mapped(request.user, car_number_plate)
         if is_mapped:
             user_car_mapping = result
         else: 
@@ -96,7 +96,7 @@ def car_create(request):
 def car_update(request, car_number_plate): 
     if request.user.is_authenticated:
 
-        (is_mapped, result) = is_car_user_mapped(request, car_number_plate)
+        (is_mapped, result) = is_car_user_mapped(request.user, car_number_plate)
         if is_mapped:
             user_car_mapping = result
         else: 
@@ -120,7 +120,7 @@ def car_update(request, car_number_plate):
 def car_delete(request, car_number_plate):
     if request.user.is_authenticated:
         
-        (is_mapped, result) = is_car_user_mapped(request, car_number_plate)
+        (is_mapped, result) = is_car_user_mapped(request.user, car_number_plate)
         if is_mapped:
             user_car_mapping = result
         else: 
@@ -190,12 +190,9 @@ def booking_create(request):
 
             ### Checking whether data recived passes additional restrictions
             # determine whether user been mapped to the car
-            try:
-                user_car_mapping = User_Car_Mapping.objects.get(user__exact = request.user, car = car)
-            except User_Car_Mapping.DoesNotExist:
-                return Response("ERROR: CURRENT OWNER HAS NOT BEEN MAPPED ONTO THE CAR")
-            except User_Car_Mapping.MultipleObjectsReturned:
-                return Response("ERROR: DUPLICATE MAPPINGS BETWEEN USER AND CAR EXIST")
+            (is_mapped, result) = is_car_user_mapped(request.user, car.car_number_plate)
+            if not is_mapped:
+                return result                
             
             # add addtional restrictions datetime validity, 
             
@@ -230,12 +227,9 @@ def booking_update(request, pk):
 
             ### Checking whether data recived passes additional restrictions
             # determine whether user been mapped to the car 
-            try:
-                user_car_mapping = User_Car_Mapping.objects.get(user__exact = request.user, car = car)
-            except User_Car_Mapping.DoesNotExist:
-                return Response("ERROR: CURRENT OWNER HAS NOT BEEN MAPPED ONTO THE CAR")
-            except User_Car_Mapping.MultipleObjectsReturned:
-                return Response("ERROR: DUPLICATE MAPPINGS BETWEEN USER AND CAR EXIST")
+            (is_mapped, result) = is_car_user_mapped(request.user, car.car_number_plate)
+            if not is_mapped:
+                return result 
             
             # add addtional restrictions datetime validity, 
             
