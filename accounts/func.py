@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.http import HttpResponse
 
 # This converts the format given by HTML date time form submission to a datetime object 

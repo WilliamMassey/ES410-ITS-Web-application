@@ -16,7 +16,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 #importing accounts serializers 
-from .serializers import CarSerializer, BookingSerializer, UserSerializer, BookingDetailSerializer
+from .serializers import CarSerializer, BookingSerializer, BookingDetailSerializer
 # Create your views here.
 
 # this defines the urls for the car API
@@ -133,6 +133,7 @@ def booking_api(request):
     }
     return Response(api_urls)
 
+
 @api_view(['GET'])
 def booking_view(request):
     if request.user.is_authenticated:
@@ -150,11 +151,12 @@ def booking_view(request):
 def booking_detail(request, pk):
     if request.user.is_authenticated:
 
-        booking = Booking.objects.filter(user = request.user).filter(id = pk)
-        if len(booking) == 0:
-            return Response("ERROR: THERE IS NO BOOKING WITH PK " + str(pk))
-        print(booking[0])
-        serializer = BookingSerializer(booking, many = True)
+        try:
+            booking = Booking.objects.get(user = request.user, id = pk)
+        except Booking.DoesNotExist:
+            return Response("ERROR: CURRENT USER HAS NO BOOKING WITH ID " +str(pk))
+
+        serializer = BookingSerializer(booking, many = False)
         
         print(serializer.data)
         # if empty do what? or easier to do on front end
@@ -165,58 +167,69 @@ def booking_detail(request, pk):
 @api_view(['POST'])
 def booking_create(request):
     if request.user.is_authenticated:
-        serializer = BookingDetailSerializer(data = request.data)
+        serializer = BookingSerializer(data = request.data)
         if serializer.is_valid():
-            car_number_plate = serializer.data['car_number_plate']
-            carpark_id = serializer.data['carpark_id']
-            start_datetime = serializer.data['start_datetime']
-            end_datetime = serializer.data['end_datetime']
-            numberplates = User_Car_Mapping.objects.filter(user__exact = request.user).filter(car__car_number_plate = car_number_plate).values_list('car', flat = True)
-            try:
-                car = Car.objects.get(car_number_plate__in = numberplates)
-            except DoesNotExist:
-                return Response("ERROR: CAR NUMBER PLATE IS INVALID")
-            
 
-            try:
-                carpark = Carpark.objects.get(id = carpark_id)
-            except DoesNotExist:
-                return Response("ERROR: CARPARK ID IS INVALID")
-            
+            car = serializer.validated_data['car']
+            carpark = serializer.validated_data['carpark']
+            start_datetime = serializer.validated_data['start_datetime']
+            end_datetime = serializer.validated_data['end_datetime']
 
+            ### Checking whether data recived passes additional restrictions
+            # determine whether user been mapped to the car
+            try:
+                user_car_mapping = User_Car_Mapping.objects.get(user__exact = request.user, car = car)
+            except User_Car_Mapping.DoesNotExist:
+                return Response("ERROR: CURRENT OWNER HAS NOT BEEN MAPPED ONTO THE CAR")
+            except User_Car_Mapping.MultipleObjectsReturned:
+                return Response("ERROR: DUPLICATE MAPPINGS BETWEEN USER AND CAR EXIST")
             
-            booking = Booking(user= request.user, car= car, carpark= carpark, start_datetime=start_datetime,end_datetime=end_datetime)
-            booking.save()
-            serializer_to_return = BookingSerializer(booking, many = False)
-            return Response(serializer_to_return.data)
+            # add addtional restrictions datetime validity, 
+            
+            serializer.save()
+            return Response(serializer.data)
         else:
             return Response(serializer.errors)
     else:
         return Response("ERROR: YOU ARE NOT LOGGED IN")
     
 
-@api_view(['POST', 'GET'])
+@api_view(['POST'])
 def booking_update(request, pk):
     if request.user.is_authenticated:
-        numberplates = User_Car_Mapping.objects.filter(user__exact = request.user).values_list('car', flat = True)
-        cars = Car.objects.filter(car_number_plate__in = numberplates)
-        can_change_car = False
-        for car in cars:
-            if car.car_number_plate == car_number_plate:
-                can_change_car = True
-        if can_change_car:
-            serializer = CarSerializer(instance = car,data = request.data)
-            if serializer.is_valid():
-                serializer.save()
-                print("serializer was valid")
+
+        try:
+            booking = Booking.objects.get(id = pk)
+        except Booking.DoesNotExist:
+            return Response("ERROR: NO BOOKING WITH ID " +str(pk) +" EXISTS")
+
+        if booking.user != request.user:
+            return Response("ERROR: THE BOOKING WITH ID " +str(pk) + " DOESN'T BELONG TO THE CURRENT USER")
+        
+        serializer = BookingSerializer(instance = booking, data = request.data)
+
+        if serializer.is_valid():
+            user = serializer.validated_data['user']
+            car = serializer.validated_data['car']
+            carpark = serializer.validated_data['carpark']
+            start_datetime = serializer.validated_data['start_datetime']
+            end_datetime = serializer.validated_data['end_datetime']
+
+            ### Checking whether data recived passes additional restrictions
+            # determine whether user been mapped to the car 
+            try:
+                user_car_mapping = User_Car_Mapping.objects.get(user__exact = request.user, car = car)
+            except User_Car_Mapping.DoesNotExist:
+                return Response("ERROR: CURRENT OWNER HAS NOT BEEN MAPPED ONTO THE CAR")
+            except User_Car_Mapping.MultipleObjectsReturned:
+                return Response("ERROR: DUPLICATE MAPPINGS BETWEEN USER AND CAR EXIST")
+            
+            # add addtional restrictions datetime validity, 
+            
+            serializer.save()
             return Response(serializer.data)
         else:
-            car_check =  Car.objects.filter(car_number_plate = car_number_plate)
-            x = len(car_check)
-            if x == 0:
-                return Response("ERROR: THIS CAR DOESN'T EXIST")
-            else:
-                return Response("ERROR: YOU ARE ABLE TO CHANGE THIS CAR")
+            return Response(serializer.errors)
     else:
         return Response("ERROR: YOU ARE NOT LOGGED IN")
 
