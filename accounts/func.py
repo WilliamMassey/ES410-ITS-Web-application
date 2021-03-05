@@ -29,7 +29,8 @@ def time_slot_default():
         time_slot[((datetime(year=2020, month=1, day=1) + slot*slot_length).time()).isoformat()] = 0 # creates a string key for every 15 min slot in the day, in the iso format (HH:MM:SS) and sets all of the values to 0 
     return time_slot
 
-
+def is_car_user_mapped():
+    
 
 
     

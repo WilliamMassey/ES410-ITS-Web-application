@@ -48,16 +48,16 @@ def car_view(request):
 @api_view(['GET'])
 def car_detail(request, car_number_plate):
     if request.user.is_authenticated:
-        numberplates = User_Car_Mapping.objects.filter(user__exact = request.user).filter(car__car_number_plate = car_number_plate).values_list('car', flat = True) # filters mappings by user -> filters resulting queryset by car number plate of -> converts the query set of UCM into a list of the numberplates 
-        cars = Car.objects.filter(car_number_plate__in = numberplates) # use the numberplates list to get a query set of the car objects registerd to the cars 
-        
-        if len(cars) == 0: # if the current user isn't registerd to the car, with the given numberplate cars will be an empty query set, so return an error  
-            return Response("ERROR: YOU HAVE NO CAR WITH THE NUMBER PLATE " + str(car_number_plate)) # stand in error response
-        elif len(cars) > 1: # if the query set has more than one element, potentially the same car has been mapped to twice
-            return Response("ERROR: A FAULT HAS OCCOURED, TOO MANY CARS HAVE BEEN RETURNED") # stand in error response
-        # remaining cases, the query sets will only have 1 element. 
-        serializer = CarSerializer(cars[0], many = False) # cars is a list so retrieve the element, then serialize it
-        # if empty do what? or easier to do on front end
+
+        try:
+            user_car_mapping = User_Car_Mapping.objects.get(user = request.user, car__car_numberplate = car_number_plate)
+        except User_Car_Mapping.DoesNotExist:
+            return Response("ERROR: CURRENT USER IS NOT MAPPED TO THE CAR WITH NUMBERPLATE " + car_number_plate)
+        except User_Car_Mapping.MultipleObjectsReturned:
+            return Response("ERROR: MULTIPLE MAPPINGS EXIST BETWEEN THE CURRENT USER AND THE CAR WITH NUMBERPLATE " + car_number_plate)
+
+        car = user_car_mapping.car
+        serializer = CarSerializer(car, many = False) 
         return Response(serializer.data) # return serialized car
     else:
         return Response("ERROR: YOU ARE NOT LOGGED IN") # if the user isn't authenticated return standing error message
@@ -66,9 +66,8 @@ def car_detail(request, car_number_plate):
 def car_create(request):
     if request.user.is_authenticated: # if user is authenticated 
         serializer = CarSerializer(data = request.data) # get a serializer object from data
-        is_valid = serializer.is_valid() # checking the validity of the data recived 
-        if is_valid: # if the data is valid
-            car =serializer.create(serializer.validated_data) # using custom create method, save the serialized car and return it
+        if serializer.is_valid(): 
+            car = serializer.create(serializer.validated_data) 
             mapping = User_Car_Mapping(car = car, user = request.user) # create the UCM using the currently logged in user and the car created
             mapping.save() # save the UCM
             return Response(serializer.data) # return the serialized object, as confirmation  
@@ -78,18 +77,22 @@ def car_create(request):
         return Response("ERROR: YOU ARE NOT LOGGED IN")
     
 # car_update function, uses the identical flow of car_create, however rather than using the save method on the serializer, getting the car object using the number plate then updating it. 
-@api_view(['POST', 'GET'])
+@api_view(['POST'])
 def car_update(request, car_number_plate): 
     if request.user.is_authenticated:
-        numberplates = User_Car_Mapping.objects.filter(user__exact = request.user).filter(car__car_number_plate = car_number_plate).values_list('car', flat = True) # 
 
-        if len(numberplates) != 1:
-            return Response("ERROR: NO OR MORE THAN ONE CAR WAS FOUND THAT FIT SEARCH PARAMETERS")
-    
-        car = Car.objects.filter(car_number_plate__in = numberplates)[0]
+        try:
+            user_car_mapping = User_Car_Mapping.objects.get(user = request.user, car__car_numberplate = car_number_plate)
+        except User_Car_Mapping.DoesNotExist:
+            return Response("ERROR: CURRENT USER IS NOT MAPPED TO THE CAR WITH NUMBERPLATE " + car_number_plate)
+        except User_Car_Mapping.MultipleObjectsReturned:
+            return Response("ERROR: MULTIPLE MAPPINGS EXIST BETWEEN THE CURRENT USER AND THE CAR WITH NUMBERPLATE " + car_number_plate)
+
+        car = user_car_mapping.car
         
         serializer = CarSerializer(instance = car,data = request.data)
         if serializer.is_valid():
+
             serializer.save()
             print("serializer was valid")
             return Response(serializer.data)
@@ -98,22 +101,18 @@ def car_update(request, car_number_plate):
     else:
         return Response("ERROR: YOU ARE NOT LOGGED IN")
 
-# Uses a similar method to car_details, however once the object is retrievied it is deleted using teh .delete() method, and it returns a message saying that the car object was successfully deleted. (the UCM is set to delete whenever the assosicated user or car is deleted)
+
 @api_view(['DELETE'])
 def car_delete(request, car_number_plate):
     if request.user.is_authenticated:
-        numberplates = User_Car_Mapping.objects.filter(user__exact = request.user).filter(car__car_number_plate = car_number_plate).values_list('car', flat = True)
-        print(numberplates)
-        
-        
-        if len(numberplates) == 0:
-            return Response("ERROR: NO CAR WAS FOUND THAT FIT SEARCH PARAMETERS")
-        elif len(numberplates) > 1:
-            return Response("ERROR: MORE THAN ONE CARE WAS FOUND THAT FIT THE SEARCH PARAMETERS")
+        try:
+            user_car_mapping = User_Car_Mapping.objects.get(user = request.user, car__car_numberplate = car_number_plate)
+        except User_Car_Mapping.DoesNotExist:
+            return Response("ERROR: CURRENT USER IS NOT MAPPED TO THE CAR WITH NUMBERPLATE " + car_number_plate)
+        except User_Car_Mapping.MultipleObjectsReturned:
+            return Response("ERROR: MULTIPLE MAPPINGS EXIST BETWEEN THE CURRENT USER AND THE CAR WITH NUMBERPLATE " + car_number_plate)
 
-    
-        car = Car.objects.filter(car_number_plate__in = numberplates)
-        print(car)
+        car = user_car_mapping.car
         car.delete()
         return Response("THE CAR WAS SUCCESSFULLY DELETED")
 
