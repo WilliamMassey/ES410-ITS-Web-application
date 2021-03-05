@@ -16,10 +16,26 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 #importing accounts serializers 
-from .serializers import CarSerializer, BookingSerializer, BookingDetailSerializer
-# Create your views here.
+from .serializers import CarSerializer, BookingSerializer
 
-# this defines the urls for the car API
+
+def is_car_user_mapped(request, car_number_plate):
+    try:
+        user_car_mapping = User_Car_Mapping.objects.get(user = request.user, car__car_number_plate = car_number_plate)
+    except User_Car_Mapping.DoesNotExist:
+        return False, Response("ERROR: CURRENT USER IS NOT MAPPED TO THE CAR WITH NUMBERPLATE " + car_number_plate)
+    except User_Car_Mapping.MultipleObjectsReturned:
+        return False, Response("ERROR: MULTIPLE MAPPINGS EXIST BETWEEN THE CURRENT USER AND THE CAR WITH NUMBERPLATE " + car_number_plate)
+    
+    return True, user_car_mapping
+
+##### APIs #####
+## Notes
+# 1) All api functions have the decorator @api_view([list_of_methods]), as described in REST API documentation, where list of methods is a list of the HTTP methods that the function can use, either "GET", "POST" or "DELETE"
+# 2) All responses with "ERROR: ..." are placeholders for debugging purposes, and will be replaced with a more formalised error system
+# 3) UCM is short hand for the model User_Car_Mapping
+### CAR API ###
+# car_api returns a list of the valid urls and the required format for the car api 
 @api_view(['GET'])
 def car_api(request):
     api_urls = {
@@ -31,30 +47,29 @@ def car_api(request):
     }
     return Response(api_urls)
 
-# this returns serialized list of all of the cars that the current user has registered
-@api_view(['GET']) # Decorator of api_view
+# car_view returns a serialized list of all of the cars that the current user has registered
+@api_view(['GET']) 
 def car_view(request):
-    if request.user.is_authenticated: # checking if the user is authenticated
-        numberplates = User_Car_Mapping.objects.filter(user__exact = request.user).values_list('car', flat = True) # obtain a list of numblates related to the user via the user car mappings
-        cars = Car.objects.filter(car_number_plate__in = numberplates) # use the number plates to get a query set of the car objects registerd to the user 
+    if request.user.is_authenticated: # check if the user is authenticated
+        numberplateQS = User_Car_Mapping.objects.filter(user__exact = request.user) # Query set of all UCMs of current user  
+        numberplates = numberplateQS.values_list('car', flat = True) # make a list containing the numberplates of all the cars from UCM query set
+        cars = Car.objects.filter(car_number_plate__in = numberplates) # use the number plates to get a query set of the cars registerd to the user 
         
         serializer = CarSerializer(data = cars, many = True) # serialize the query set 
         serializer.is_valid() # validate the data
         return Response(serializer.data) # return the serialized data using the "Response" function
     else:
-        return Response("ERROR: YOU ARE NOT LOGGED IN") # stand in response for testing, will be replaced with a serialized error object
+        return Response("ERROR: YOU ARE NOT LOGGED IN") 
 
-
+# car_detail returns the serialized car object of the car with the numberplate "car_number_plate"
 @api_view(['GET'])
 def car_detail(request, car_number_plate):
-    if request.user.is_authenticated:
-
-        try:
-            user_car_mapping = User_Car_Mapping.objects.get(user = request.user, car__car_numberplate = car_number_plate)
-        except User_Car_Mapping.DoesNotExist:
-            return Response("ERROR: CURRENT USER IS NOT MAPPED TO THE CAR WITH NUMBERPLATE " + car_number_plate)
-        except User_Car_Mapping.MultipleObjectsReturned:
-            return Response("ERROR: MULTIPLE MAPPINGS EXIST BETWEEN THE CURRENT USER AND THE CAR WITH NUMBERPLATE " + car_number_plate)
+    if request.user.is_authenticated: # check if the user is authenticated
+        (is_mapped, result) = is_car_user_mapped(request, car_number_plate)
+        if is_mapped:
+            user_car_mapping = result
+        else: 
+            return result
 
         car = user_car_mapping.car
         serializer = CarSerializer(car, many = False) 
@@ -81,12 +96,11 @@ def car_create(request):
 def car_update(request, car_number_plate): 
     if request.user.is_authenticated:
 
-        try:
-            user_car_mapping = User_Car_Mapping.objects.get(user = request.user, car__car_numberplate = car_number_plate)
-        except User_Car_Mapping.DoesNotExist:
-            return Response("ERROR: CURRENT USER IS NOT MAPPED TO THE CAR WITH NUMBERPLATE " + car_number_plate)
-        except User_Car_Mapping.MultipleObjectsReturned:
-            return Response("ERROR: MULTIPLE MAPPINGS EXIST BETWEEN THE CURRENT USER AND THE CAR WITH NUMBERPLATE " + car_number_plate)
+        (is_mapped, result) = is_car_user_mapped(request, car_number_plate)
+        if is_mapped:
+            user_car_mapping = result
+        else: 
+            return result
 
         car = user_car_mapping.car
         
@@ -105,12 +119,12 @@ def car_update(request, car_number_plate):
 @api_view(['DELETE'])
 def car_delete(request, car_number_plate):
     if request.user.is_authenticated:
-        try:
-            user_car_mapping = User_Car_Mapping.objects.get(user = request.user, car__car_numberplate = car_number_plate)
-        except User_Car_Mapping.DoesNotExist:
-            return Response("ERROR: CURRENT USER IS NOT MAPPED TO THE CAR WITH NUMBERPLATE " + car_number_plate)
-        except User_Car_Mapping.MultipleObjectsReturned:
-            return Response("ERROR: MULTIPLE MAPPINGS EXIST BETWEEN THE CURRENT USER AND THE CAR WITH NUMBERPLATE " + car_number_plate)
+        
+        (is_mapped, result) = is_car_user_mapped(request, car_number_plate)
+        if is_mapped:
+            user_car_mapping = result
+        else: 
+            return result
 
         car = user_car_mapping.car
         car.delete()
@@ -120,7 +134,7 @@ def car_delete(request, car_number_plate):
         return Response("ERROR: YOU ARE NOT LOGGED IN")
 
 
-#### Booking ####
+### Booking API ###
 @api_view(['GET'])
 def booking_api(request):
     api_urls = {
@@ -248,6 +262,9 @@ def booking_delete(request, pk):
         return Response("booking id " + str(pk) + " has been successfully deleted")
     else: 
         return Response("ERROR: YOU ARE NOT LOGGED IN")
+
+
+
 
 def accounts(request):
 

@@ -17,12 +17,6 @@ class CarSerializer(serializers.ModelSerializer):
     fields = '__all__'
 
 
-class BookingDetailSerializer(serializers.Serializer):
-  car_number_plate = serializers.CharField(max_length = 7)
-  carpark_id = serializers.CharField(max_length = 3)
-  start_datetime = serializers.DateTimeField()
-  end_datetime = serializers.DateTimeField()
-
 class BookingSerializer(serializers.ModelSerializer):
   # makes the model being serialized is the Booking model and serializes all of the fields
   class Meta():

@@ -48,4 +48,4 @@ class Booking(models.Model):
 class Booking_data(models.Model):
     date = models.DateField()
     carpark = models.ForeignKey('home.Carpark', on_delete = models.CASCADE)
-    time_slots =  models.JSONField(default = time_slot_default()) # method time_slot_default(), creats a dictionary, for each time slot and sets all of the values to 0
+    time_slots =  models.JSONField(default = time_slot_default()) # function time_slot_default(), creates a dictionary, for each time slot and sets all of the values to 0
