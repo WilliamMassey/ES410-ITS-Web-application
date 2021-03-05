@@ -1,6 +1,8 @@
 from django.urls import path
 from . import views
 
+# This connects the /accounts/ urls to the view functions
+# N.B. the format <str:Parameter_Name> means that a parameter is passed in the url 
 urlpatterns = [
     path('register', views.register, name='register'),
     path('login', views.login, name='login'),
@@ -10,7 +12,7 @@ urlpatterns = [
 
     path('car-api', views.car_api, name ='car-api'),
     path('car-view/', views.car_view, name ='car-view'),
-    path('car-detail/<str:car_number_plate>', views.car_detail, name ='car-detail'),
+    path('car-detail/<str:car_number_plate>', views.car_detail, name ='car-detail'), 
     path('car-create/', views.car_create, name ='car-create'),
     path('car-update/<str:car_number_plate>', views.car_update, name ='car-update'),
     path('car-delete/<str:car_number_plate>', views.car_delete, name ='car-delete'),

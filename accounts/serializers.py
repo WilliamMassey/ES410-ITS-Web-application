@@ -3,20 +3,18 @@ from .models import Car, Booking
 from django.contrib.auth.models import User
 from home.serializers import CarparkSerializer
 
-
-class UserSerializer(serializers.ModelSerializer):
- class Meta():
-  model = User
-  fields = ['username','first_name','last_name','email']
+### This file defines the how models are serialized: choosing which fields are serialized, defining how the fields are serialized and finally defining/redefining serializer methods.  ### 
 
 
 class CarSerializer(serializers.ModelSerializer): 
- def create(self, validated_data):
-   return Car.objects.create(**validated_data)
+ # This defines the create method, where the serializer model creates a car object and then returns it 
+  def create(self, validated_data):
+    return Car.objects.create(**validated_data)
 
- class Meta():
-  model = Car
-  fields = '__all__'
+  # makes the model being serialized is the Car model and serializes all of the fields
+  class Meta():
+    model = Car
+    fields = '__all__'
 
 
 class BookingDetailSerializer(serializers.Serializer):
@@ -26,39 +24,7 @@ class BookingDetailSerializer(serializers.Serializer):
   end_datetime = serializers.DateTimeField()
 
 class BookingSerializer(serializers.ModelSerializer):
- class Meta():
-  model = Booking
-  fields = '__all__'
-#  car_number_plate = serializers.CharField(max_length = 7)
-#  start_datetime = serializers.DateTimeField()
-#  end_datetime = serializers.DateTimeField()
-#  carpark_name = serializers.CharField(max_length = 30)
-#  def to_internal_value(self,data):
-#   try:
-#      data['user'] = data['user']['id']
-#   except TypeError:
-#     pass
-#   try:
-#      data['carpark'] = data['carpark']['id']
-#   except TypeError:
-#     pass
-#   try:
-#      data['car'] = data['car']['car_number_plate']
-#   except TypeError:
-#     pass
-#   return super(PlayerSerializer, self).to_internal_value(data)
-
-#   def to_representation(self,instance):
-#     return ReadBookingSerializer(instance).data
-
-# class ReadBookingSerializer(serializers.ModelSerializer):
-#   user = UserSerializer()
-#   car = CarSerializer()
-#   carpark = CarparkSerializer()
-#   class Meta(BookingSerializer.Meta):
-#     pass
-
- 
-
-
-
+  # makes the model being serialized is the Booking model and serializes all of the fields
+  class Meta():
+    model = Booking
+    fields = '__all__'
