@@ -21,3 +21,7 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# igornore all pycache files, N.B. if this is a bady thing to do will undo
+
+__pycache__/
