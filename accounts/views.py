@@ -243,7 +243,7 @@ def booking_update(request, pk):
 
 # booking_delete does the equivalent to car_delete 
 @api_view(['DELETE'])
-def booking_deledgte(request, pk):
+def booking_delete(request, pk):
     if request.user.is_authenticated: # check if user is authenticated 
         # check a booking with the id "pk" exists
         try:
