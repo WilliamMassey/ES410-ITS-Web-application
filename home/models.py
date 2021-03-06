@@ -9,6 +9,6 @@ class Carpark(models.Model):
     booked_places = models.SmallIntegerField()
 
 class Live_Feed(models.Model):
-    time_stamp = models.DateTimeField()
-    car_number_plate = models.ForeignKey('accounts.Car', on_delete = models.CASCADE)
-    carpark = models.ForeignKey(Carpark, on_delete = models.CASCADE)
+    timestamp = models.DateTimeField()
+    car_number_plate = models.CharField(max_length = 7, default = None)
+    carpark = models.IntegerField(default = None)
