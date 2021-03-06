@@ -14,7 +14,7 @@ class Details(models.Model):
 # Car stores infromation regarding the cars
 class Car(models.Model):
 
-    CAR_COLOURS = (
+    CAR_COLOURS = (  # CAR_COLOURS reduces car colour into a single charater
         ('b', 'blue'),
         ('r', 'red'),
         ('g', 'green'),
@@ -23,7 +23,7 @@ class Car(models.Model):
         ('s', 'black'),
         ('n', 'brown'),
         ('w', 'white')
-    ) # CAR_COLOURS reduces car colour into a single charater
+    )
     car_number_plate = models.CharField(max_length = 7, primary_key = True, default = None)# car number plate is unique so is used as primary key
     # following attributes are visual to aid the identification of the car
     colour = models.CharField(max_length = 1, default = 's', choices = CAR_COLOURS) 

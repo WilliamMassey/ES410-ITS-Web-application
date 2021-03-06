@@ -59,82 +59,84 @@ def car_view(request):
         serializer.is_valid() # validate the data
         return Response(serializer.data) # return the serialized data using the "Response" function
     else:
-        return Response("ERROR: YOU ARE NOT LOGGED IN") 
+        return Response("ERROR: YOU ARE NOT LOGGED IN") # if the user isn't authenticated return error message
 
-# car_detail returns the serialized car object of the car with the numberplate "car_number_plate"
+# car_detail returns the serialized car object of the car with the numberplate given as the parameter "car_number_plate" 
 @api_view(['GET'])
 def car_detail(request, car_number_plate):
     if request.user.is_authenticated: # check if the user is authenticated
-        (is_mapped, result) = is_car_user_mapped(request.user, car_number_plate)
-        if is_mapped:
+        (is_mapped, result) = is_car_user_mapped(request.user, car_number_plate) # determine whether user and inputted car are mapped
+        if is_mapped: # if mapped, set user_car_mapping to the appropriate UCM
             user_car_mapping = result
-        else: 
+        else: # if not mapped return the corresponding error message
             return result
 
-        car = user_car_mapping.car
-        serializer = CarSerializer(car, many = False) 
+        car = user_car_mapping.car # get the car from UCM
+        serializer = CarSerializer(car, many = False) # serialize car
         return Response(serializer.data) # return serialized car
     else:
-        return Response("ERROR: YOU ARE NOT LOGGED IN") # if the user isn't authenticated return standing error message
+        return Response("ERROR: YOU ARE NOT LOGGED IN") # if the user isn't authenticated return error message
 
+# car_create takes serialized car data and saves car object to database
 @api_view(['POST'])
 def car_create(request):
     if request.user.is_authenticated: # if user is authenticated 
         serializer = CarSerializer(data = request.data) # get a serializer object from data
-        if serializer.is_valid(): 
-            car = serializer.create(serializer.validated_data) 
-            mapping = User_Car_Mapping(car = car, user = request.user) # create the UCM using the currently logged in user and the car created
+        if serializer.is_valid(): # is the data recived valid
+            car = serializer.create(serializer.validated_data) # save the Car object from serializer and set that object to car
+            mapping = User_Car_Mapping(car = car, user = request.user) # create the UCM using the current user and the car just created
             mapping.save() # save the UCM
-            return Response(serializer.data) # return the serialized object, as confirmation  
+            return Response(serializer.data) # return the serialized object
         else: 
-            return Response(serializer.errors) # return the error response, outlining, what was wrong iwtht he serialized data 
+            return Response(serializer.errors) # return the error response, outlining, what was wrong with the serialized data 
     else:
-        return Response("ERROR: YOU ARE NOT LOGGED IN")
+        return Response("ERROR: YOU ARE NOT LOGGED IN") # if the user isn't authenticated return error message
     
-# car_update function, uses the identical flow of car_create, however rather than using the save method on the serializer, getting the car object using the number plate then updating it. 
+# car_update changes the attributes of the car with the numberplate given as the parameter "car_number_plate" 
 @api_view(['POST'])
 def car_update(request, car_number_plate): 
-    if request.user.is_authenticated:
-
-        (is_mapped, result) = is_car_user_mapped(request.user, car_number_plate)
+    if request.user.is_authenticated: # check if user is authenticated 
+        # check if user is mapped to car
+        (is_mapped, result) = is_car_user_mapped(request.user, car_number_plate) # idential useage as found in car_detail (lines 68-72)
         if is_mapped:
             user_car_mapping = result
         else: 
             return result
 
-        car = user_car_mapping.car
+        car = user_car_mapping.car # get the car from UCM
         
-        serializer = CarSerializer(instance = car,data = request.data)
-        if serializer.is_valid():
+        serializer = CarSerializer(instance = car,data = request.data) # This functions the same as in car_create(), however the argument instance means that will change a current object rather than creating a new one
+        if serializer.is_valid(): # is the data recived valid
 
-            serializer.save()
-            print("serializer was valid")
-            return Response(serializer.data)
+            serializer.save() # update car object with new attributes
+            return Response(serializer.validated_data) # return new car object
         else:
-                return Response(serializer.errors)
+                return Response(serializer.errors) # return errors of serialized object
     else:
         return Response("ERROR: YOU ARE NOT LOGGED IN")
 
-
+# car_delete deletes the car with the numberplate given as the parameter "car_number_plate"
 @api_view(['DELETE'])
 def car_delete(request, car_number_plate):
-    if request.user.is_authenticated:
+    if request.user.is_authenticated: # check if user is logged in 
         
-        (is_mapped, result) = is_car_user_mapped(request.user, car_number_plate)
+        # check if user is mapped to car
+        (is_mapped, result) = is_car_user_mapped(request.user, car_number_plate) # idential useage as found in car_detail (lines 68-72)
         if is_mapped:
             user_car_mapping = result
         else: 
             return result
-
-        car = user_car_mapping.car
-        car.delete()
-        return Response("THE CAR WAS SUCCESSFULLY DELETED")
+        ### Need to add functionality that if there are more than one mappings associated with a single car, that the current users mapping is deleted rather than the car itself
+        car = user_car_mapping.car # get the car from UCM
+        car.delete() # delete the car object
+        return Response("THE CAR WAS SUCCESSFULLY DELETED") # infrom frontend the car was successfully deleted
 
     else: 
         return Response("ERROR: YOU ARE NOT LOGGED IN")
 
 
 ### Booking API ###
+# booking_api returns a list of the valid urls and the required format for the booking api 
 @api_view(['GET'])
 def booking_api(request):
     api_urls = {
@@ -146,43 +148,41 @@ def booking_api(request):
     }
     return Response(api_urls)
 
-
+# booking_detail does the equivalent to car_api
 @api_view(['GET'])
 def booking_view(request):
-    if request.user.is_authenticated:
-        
-        bookings = (Booking.objects.filter(user__exact = request.user))
-        print("bookings " + str(bookings))
-        serializer = BookingSerializer(data = bookings, many = True)
-        serializer.is_valid()
-        # if empty do what? or easier to do on front end
-        return Response(serializer.data)
+    if request.user.is_authenticated: # check if user is authenticated 
+        bookings = (Booking.objects.filter(user__exact = request.user)) # gets all bookings associated with current user
+        serializer = BookingSerializer(data = bookings, many = True) # Serializes all the bookings 
+        serializer.is_valid() # check is valid
+        return Response(serializer.data) # return serialized data
     else:
         return Response("ERROR: YOU ARE NOT LOGGED IN")
 
+# booking_detail does the equivalent to car_detail 
 @api_view(['GET'])
 def booking_detail(request, pk):
-    if request.user.is_authenticated:
-
-        try:
+    if request.user.is_authenticated: # check if user is authenticated 
+        
+        try: # check whether the booking with id = pk exists and that the current user is associated to thatvbooking 
             booking = Booking.objects.get(user = request.user, id = pk)
         except Booking.DoesNotExist:
             return Response("ERROR: CURRENT USER HAS NO BOOKING WITH ID " +str(pk))
 
-        serializer = BookingSerializer(booking, many = False)
+        serializer = BookingSerializer(booking, many = False) # serialize the booking
         
-        print(serializer.data)
-        # if empty do what? or easier to do on front end
-        return Response(serializer.data)
+        return Response(serializer.data) # return serialized data  
     else:
-        return Response("ERROR: YOU ARE NOT LOGGED IN")
+        return Response("ERROR: YOU ARE NOT LOGGED IN") 
 
+# booking_create does the equivalent to car_create 
 @api_view(['POST'])
 def booking_create(request):
-    if request.user.is_authenticated:
-        serializer = BookingSerializer(data = request.data)
-        if serializer.is_valid():
+    if request.user.is_authenticated: # check if the user authenticated
+        serializer = BookingSerializer(data = request.data) # serialize the booking from data 
+        if serializer.is_valid(): # check if data is valid
 
+            # Get the data from serializer
             car = serializer.validated_data['car']
             carpark = serializer.validated_data['carpark']
             start_datetime = serializer.validated_data['start_datetime']
@@ -196,29 +196,30 @@ def booking_create(request):
             
             # add addtional restrictions datetime validity, 
             
-            serializer.save()
-            return Response(serializer.data)
+            serializer.save() # save the serializer 
+            return Response(serializer.data) # return serialized data to confirm 
         else:
             return Response(serializer.errors)
     else:
         return Response("ERROR: YOU ARE NOT LOGGED IN")
     
-
+# booking_update does the equivalent to car_update 
 @api_view(['POST'])
 def booking_update(request, pk):
     if request.user.is_authenticated:
-
-        try:
+        
+        try: # check if a booking that matches the id, pk
             booking = Booking.objects.get(id = pk)
         except Booking.DoesNotExist:
             return Response("ERROR: NO BOOKING WITH ID " +str(pk) +" EXISTS")
 
-        if booking.user != request.user:
+        if booking.user != request.user: # check if the user assoicated with that booking is the curretn user
             return Response("ERROR: THE BOOKING WITH ID " +str(pk) + " DOESN'T BELONG TO THE CURRENT USER")
         
-        serializer = BookingSerializer(instance = booking, data = request.data)
+        serializer = BookingSerializer(instance = booking, data = request.data) # create serializer updating the booking 
 
-        if serializer.is_valid():
+        if serializer.is_valid(): # check if the serializer is valid
+            # get data from serializer
             user = serializer.validated_data['user']
             car = serializer.validated_data['car']
             carpark = serializer.validated_data['carpark']
@@ -233,38 +234,45 @@ def booking_update(request, pk):
             
             # add addtional restrictions datetime validity, 
             
-            serializer.save()
-            return Response(serializer.data)
+            serializer.save() # save serialized data
+            return Response(serializer.data) # return updated serialized data as confirmation
         else:
             return Response(serializer.errors)
     else:
         return Response("ERROR: YOU ARE NOT LOGGED IN")
 
-
+# booking_delete does the equivalent to car_delete 
 @api_view(['DELETE'])
-def booking_delete(request, pk):
-    if request.user.is_authenticated:
+def booking_deledgte(request, pk):
+    if request.user.is_authenticated: # check if user is authenticated 
+        # check a booking with the id "pk" exists
         try:
             booking = Booking.ojbects.get(id = pk)
         except DoesNotExist:
             return Response("Booking doesn't exist")
-        booking_user = booking.user
-        if booking_user != request.user:
+        booking_user = booking.user 
+        if booking_user != request.user: # check whether the booking is associated with the current user
             return Response("ERROR: You do no have acess to this booking")
         
-        booking.delete()
-        return Response("booking id " + str(pk) + " has been successfully deleted")
+        booking.delete() # delete the booking
+        return Response("booking id " + str(pk) + " has been successfully deleted") # return message stating that it has been successfully deleted
     else: 
         return Response("ERROR: YOU ARE NOT LOGGED IN")
 
 
+##### Views #####
+# Notes:
+# 1) These are currently redundant views so as a result have bugs
+# 2) These use default django workflow where standard JavaScript, CSS and HTML are used, for the final implementation react will be used.
+# 3) Although some may stay they will be heavily altered by the end of teh project, as a result the rather than going through each view an overview of the role will be outlined  
 
-
+# Render the login page
 def accounts(request):
 
     #by default login 
     return render(request, 'login.html')
 
+# redirect to login page, recive loggin form, check whether the user data is valid, and if so log in and return to home page, if not return to login page with an error message
 def login(request):
     ### ADD EMAIL CONFIRMED ###
     if request.method == 'POST':
@@ -282,6 +290,7 @@ def login(request):
     else:
         return render(request, 'login.html')
 
+# redirect to register page recive register form, check inputs against criteria and if valid create the user and redirect to home page, if not return to the register page and display error messages 
 def register(request):
     if request.method == 'POST':
         first_name = request.POST['first_name']
@@ -351,6 +360,7 @@ def register(request):
     else:
         return render(request, 'register.html')
 
+# redirect to add_car page, recive car form, check conditions and determine whether the inputs are valid, if they are create a car and a UCM, if not return to the add car page with error messages
 def add_car(request):
     if request.user.is_authenticated == True:
         if request.method == 'POST':
@@ -415,10 +425,12 @@ def add_car(request):
         print("not logged in go to login page")
         return render(request, 'login.html')
 
+# log the current user out
 def logout(request):
     auth.logout(request)
     return redirect('/')
 
+# redirect to the add_booking page, recive the form data and check whether the data is valid, if not return to the add booking page, if it is add the booking, and redirect to home page.
 def add_booking(request):
     if request.user.is_authenticated == True:
         if request.method == 'POST':
