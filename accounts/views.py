@@ -18,7 +18,7 @@ from rest_framework.response import Response
 #importing accounts serializers 
 from .serializers import CarSerializer, BookingSerializer
 
-
+# is_car_user_mapped checks whether a mapping exists between the given user and the car with the given car numberplate. If it is mapped, a tupple is returned with the first element stating whether they are mapped and the second is the mapping. if not mapped the first element is given as false, and the second element is a response object, stating what the issue is.  
 def is_car_user_mapped(user, car_number_plate):
     try:
         user_car_mapping = User_Car_Mapping.objects.get(user = user, car__car_number_plate = car_number_plate)
@@ -243,7 +243,7 @@ def booking_update(request, pk):
 
 # booking_delete does the equivalent to car_delete 
 @api_view(['DELETE'])
-def booking_deledgte(request, pk):
+def booking_delete(request, pk):
     if request.user.is_authenticated: # check if user is authenticated 
         # check a booking with the id "pk" exists
         try:

@@ -5,8 +5,6 @@ from django.db import models
 class Carpark(models.Model):
     name = models.CharField(max_length = 20)
     total_places = models.SmallIntegerField()
-    occupied_places = models.SmallIntegerField()
-    booked_places = models.SmallIntegerField()
 
 class Live_Feed(models.Model):
     timestamp = models.DateTimeField()

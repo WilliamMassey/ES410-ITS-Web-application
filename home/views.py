@@ -5,9 +5,8 @@ from django.core.mail import send_mail, BadHeaderError
 from django.http import HttpResponse
 from datetime import datetime, timedelta, time, date
 
-# Create your views here.
+
 def home(request):
-    # make database
     today = date.today()
     three_days = timedelta(days=3)
     carparks = Carpark.objects.all()
@@ -32,7 +31,6 @@ def home(request):
         is_booking_empty = False
     else: 
         is_booking_empty = True
-    #print("car colour " +str(cars[0].colour))
     return render(request, 'index.html', {'carparks' : carpark_list, 'cars' : cars, 'is_car_empty' : is_car_empty, 'is_booking_empty' : is_booking_empty, 'bookings': bookings})
 
 def email_test(request):

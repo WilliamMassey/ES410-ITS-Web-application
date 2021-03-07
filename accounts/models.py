@@ -44,8 +44,9 @@ class Booking(models.Model):
     carpark = models.ForeignKey('home.Carpark', on_delete = models.CASCADE, default = None) # which carpark the booking is 
   
 
-# Booking_data stores the information regarding bookings for a specific day at a specific carpark
-class Booking_data(models.Model):
-    date = models.DateField()
+# carpark_data stores the booking or occupancy data for a specific day at a carpark
+class carpark_data(models.Model):
+    date = models.DateField() 
+    is_booking = models.BooleanField() # if True is booking data, if False is occupancy 
     carpark = models.ForeignKey('home.Carpark', on_delete = models.CASCADE)
-    time_slots =  models.JSONField(default = time_slot_default()) # function time_slot_default(), creates a dictionary, for each time slot and sets all of the values to 0
+    data =  models.JSONField(default = time_slot_default()) # sets default data to be a dictionary using time_slot_default as explained in func.py
