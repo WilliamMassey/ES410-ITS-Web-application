@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
-from .models import Carpark, Live_Feed
-from accounts.models import User_Car_Mapping, Car, Booking, Booking_data
+from .models import Carpark, Live_Feed, Carpark_Data
+from accounts.models import User_Car_Mapping, Car, Booking
 from django.core.mail import send_mail, BadHeaderError
 from django.http import HttpResponse
 from datetime import datetime, timedelta, time, date
@@ -9,9 +9,9 @@ from datetime import datetime, timedelta, time, date
 def home(request):
     carparks = Carpark.objects.all()
     carpark_list = []
-    for carpark in carparks:
-        carpark_data_object = Booking_data.objects.filter(carpark = carpark, date__lte =  today + three_days , date__gte = today)
-        carpark_list.append(carpark_data_object)
+    # for carpark in carparks:
+    #     carpark_data_object = Booking_data.objects.filter(carpark = carpark, date__lte =  today + three_days , date__gte = today)
+    #     carpark_list.append(carpark_data_object)
 
     if request.user.is_authenticated:
 

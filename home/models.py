@@ -1,5 +1,5 @@
 from django.db import models
-
+from datetime import timedelta, datetime
 # Create your models here.
 
 # creates dictionary with a string key for every 15 min slot in the day, in the iso format (HH:MM:SS) and sets all of the values to 0 
