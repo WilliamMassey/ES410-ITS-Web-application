@@ -260,11 +260,11 @@ def booking_delete(request, pk):
         return Response("ERROR: YOU ARE NOT LOGGED IN")
 
 
-##### Views #####
+##### Rendering Views #####
 # Notes:
 # 1) These are currently redundant views so as a result have bugs
 # 2) These use default django workflow where standard JavaScript, CSS and HTML are used, for the final implementation react will be used.
-# 3) Although some may stay they will be heavily altered by the end of teh project, as a result the rather than going through each view an overview of the role will be outlined  
+# 3) Although rendering views are required, the functionality has changed so drastically, that none of these will be used by kept as a reference  
 
 # Render the login page
 def accounts(request):
