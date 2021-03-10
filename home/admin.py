@@ -1,5 +1,5 @@
 from django.contrib import admin
 from .models import Carpark
-# Register your models here.
 
+# Add carpark model to admin page
 admin.site.register(Carpark)
