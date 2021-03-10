@@ -22,7 +22,7 @@ The files in the root directory used are:
 * **'mydatabase.sqlite3'**
 * **'manage.py'** 
 
-N.B. The web app can be ran by typing in **'python manage.py runserver'**, while within the smart carpark directory, and then typing in the URL "http://127.0.0.1:8000/" into a browser. The legacy URLs (as discussed bellow) are still partially functional, however the API URLs are not accessible without having an account created. 
+N.B. The web app can be ran by typing in **'python manage.py runserver'**, while within the smart carpark directory, and then typing in the URL "http://127.0.0.1:8000/" into a browser. The legacy URLs (as discussed bellow) are still partially functional, however the API URLs are not accessible without having an account created. However this is not recommended at this time to try to do this.
 ### Legacy Code
 There is also code here, which is redundant and hasn't been deleted, as it may be used for reference in the future. It was orginally written before the introduction of react as the front end framework, which has different requirements for integration with the backend.
 
