@@ -26,7 +26,7 @@ function SignUp() {
                         </div>
 
                         <div className="form-group">
-                            <label>University ID</label>
+                            <label>University ID (Optional)</label>
                             <input type="text"
                             className="form-control"
                             placeholder="Enter University ID"
