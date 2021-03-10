@@ -7,8 +7,6 @@ from datetime import datetime, timedelta, time, date
 
 
 def home(request):
-    today = date.today()
-    three_days = timedelta(days=3)
     carparks = Carpark.objects.all()
     carpark_list = []
     for carpark in carparks:

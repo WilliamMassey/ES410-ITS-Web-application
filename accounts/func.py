@@ -21,13 +21,5 @@ def conv_html_datetime(html_datetime):
     else:
         return datetime(2000,1,1)
 
-# creates dictionary with a string key for every 15 min slot in the day, in the iso format (HH:MM:SS) and sets all of the values to 0 
-def time_slot_default():
-    no_slots = 24*4
-    slot_length = timedelta(minutes=15)
-    time_slot = dict()
 
-    for slot in range(0,no_slots):
-        time_slot[((datetime(year=2020, month=1, day=1) + slot*slot_length).time()).isoformat()] = 0 
-    return time_slot
 
