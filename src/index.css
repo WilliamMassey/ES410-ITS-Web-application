@@ -113,6 +113,19 @@ html,
   color: #167bff;
 }
 
+.have-account,
+.have-account a {
+  text-align: right;
+  font-size: 13px;
+  padding-top: 10px;
+  color: #7f7d7d;
+  margin: 0;
+}
+
+.have-account a {
+  color: #167bff;
+}
+
 .map {
   height: 100%;
   width: 100%;
@@ -122,6 +135,12 @@ html,
 }
 
 .home-title {
+  text-align: center;
+  padding-top: 100px;
+  padding-bottom: 20px;
+}
+
+.about-title {
   text-align: center;
   padding-top: 100px;
   padding-bottom: 20px;

@@ -3,12 +3,15 @@ import React, { useState } from "react";
 function LoginForm({Login, error}) {
         const [details, setDetails] = useState({email:"", password:""})
 
+        {/* checking login details after submitting */}
         const submitHandler = e => {
             e.preventDefault ();
             
             Login(details);
         }
-
+        
+        {/* creating form for logging in */}
+        
         return (
             <div className="login-wrapper">
                 <div className="login-inner">       

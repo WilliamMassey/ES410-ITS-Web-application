@@ -2,8 +2,8 @@ import React, { useState } from "react";
 
 function About() {
         return (
-            <div>
-                <h3>About us</h3>
+            <div className="about-title">
+                <h1>About us</h1>
             </div>
         );
     }

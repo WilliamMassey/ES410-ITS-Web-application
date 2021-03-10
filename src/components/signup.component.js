@@ -1,4 +1,7 @@
 import React, { useState } from "react";
+import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+
+{/* creating form for signing up */}
 
 function SignUp() {
         return (
@@ -52,7 +55,16 @@ function SignUp() {
                                 className="form-control" 
                                 placeholder="Enter password" 
                                 id="password" />
-                            </div>
+                        </div>
+
+                        <button type="submit" className="btn btn-primary btn-block">Submit</button>
+
+                        {/* linking to login page */}
+
+                        <p className="have-account text-right">
+                            If you have an account <Link to={"/sign-in"}>login here</Link>
+                        </p>
+                        
                     </form>
                 </div>
             </div>

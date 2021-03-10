@@ -9,6 +9,9 @@ import About from "./components/about.component";
 import Logo from "./UniOfWarwickLogo.jpg"
 
 function App() {
+
+  {/* creating admin user to check login functionality */}
+
   const adminUser = {
     email:"admin@admin.com",
     password: "admin123"
@@ -32,6 +35,8 @@ function App() {
   const Logout = () => {
     console.log("Logout");
   }
+
+  {/* adding the routes to the navbar */}
 
   return (<Router>
     <div className="App">
@@ -60,15 +65,17 @@ function App() {
         </div>
       </nav>
 
-          <Switch>
-            <Route exact path="/" component={Home} />
-            <Route path="/home" component={Home} />
-            <Route path="/about" component={About} />
-            <Route path="/sign-in" render={routeProps => <LoginForm {...routeProps} Login={Login} error={error} />} />
-            <Route path="/sign-up" component={SignUp} />
-          </Switch>
-    </div></Router>
-  );
+      {/* assigning route locations */}
+
+      <Switch>
+        <Route exact path="/" component={Home} />
+        <Route path="/home" component={Home} />
+        <Route path="/about" component={About} />
+        <Route path="/sign-in" render={routeProps => <LoginForm {...routeProps} Login={Login} error={error} />} />
+        <Route path="/sign-up" component={SignUp} />
+      </Switch>
+    </div>
+  </Router>);
 }
 
 export default App;

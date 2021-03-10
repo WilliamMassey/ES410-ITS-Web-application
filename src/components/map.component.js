@@ -3,6 +3,8 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import { Icon } from "leaflet"
 import * as carparkData from "../data/carparks.json";
 
+{/* setting new parking icon */}
+
 const parking = new Icon ({
   iconUrl: "/images/parking.png",
   iconSize: [25,25]
@@ -12,13 +14,18 @@ function Map(){
   const [activeCarpark, setActiveCarpark] = useState(null);
 
   return(
+
+  /* initialising map from OpenStreetMap */
+
   <div  className="map">
     <MapContainer center ={[52.382921, -1.564097]} zoom ={15}>
       <TileLayer
         attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        minZoom = {13}
+        minZoom = {14}
       />
+
+      {/* adding carpark locations to the map */}
 
       {carparkData.features.map(carpark => ( 
         <Marker 
@@ -30,6 +37,8 @@ function Map(){
           icon={parking}
         />
       ))}
+
+      {/* adding the popup message when hovering over a carpark */}
 
       {activeCarpark && (
         <Popup
