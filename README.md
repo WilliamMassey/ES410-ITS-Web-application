@@ -1,6 +1,16 @@
 # Smart Carpark Web application
 The web app is a way for users to access the functionality of the smart carpark via a browser on any device. It can be split into two sections the front end and the backend. Front end generates the user facing portion of the web app where as the back end midates between the front end and the database. The back end also runs and manages the server. 
 
+## Prerequisits
+The following modules/ programs are required to run the project:
+* Python (3.9.1)
+* asgiref (3.3.1)
+* Django (3.1.7)
+* djangorestframework (3.12.2)
+* pytz (2021.1)
+* schedule (1.0.0)
+* sqlparse (0.4.1) 
+
 ## Backend 
 The directories used are:
 * home
