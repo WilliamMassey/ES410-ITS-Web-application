@@ -9,7 +9,19 @@ The following modules/ programs are required to run the project:
 * djangorestframework (3.12.2)
 * pytz (2021.1)
 * schedule (1.0.0)
-* sqlparse (0.4.1) 
+* sqlparse (0.4.1)
+* React (17.0.1)
+* React-DOM (17.0.1)
+* React-Router-DOM (5.2.0)
+* Bootstrap (4.6.0)
+* Leaflet (1.7.1)
+
+## Frontend
+The directories used are:
+* **'/public'**
+* **'/src'**
+
+N.B. The front end can be accessed by typing **'npm start'** while in the carpark directory.
 
 ## Backend 
 The directories used are:
