@@ -9,7 +9,7 @@
   box-sizing: border-box;
 }
 body {
-  background: whitesmoke !important;
+  background: whitesmoke;
   min-height: 100vh;
   display: flex;
   font-weight: 400;
@@ -55,7 +55,6 @@ html,
   justify-content: center;
   display: flex;
   text-align: left;
-  padding-top: 1000px;
 }
 
 .signup-wrapper h3 {
