@@ -144,3 +144,39 @@ html,
   padding-top: 100px;
   padding-bottom: 20px;
 }
+
+.internal-home-title {
+  color: white;
+  padding-top: 270px;
+  padding-bottom: 20px;
+  padding-right: 50px;
+}
+
+.parking-location-title {
+  color: white;
+  padding-right: 150px;
+  padding-bottom: 10px;
+}
+
+.parking-location-list {
+  padding-right: 10px;
+}
+
+.form-select {
+  border-radius: 5px;
+}
+
+.location-icon {
+  padding-right: 190px;
+}
+
+.booking-button {
+  margin-top: 30px;
+  margin-right: 160px;
+  padding-right: 160px;
+  padding-left: 160px;
+  background: red;
+  border-radius: 8px;
+  color: white;
+  text-align: center;
+}

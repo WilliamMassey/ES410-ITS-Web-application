@@ -3,21 +3,21 @@ import React, { useState } from "react";
 function LoginForm({Login, error}) {
         const [details, setDetails] = useState({email:"", password:""})
 
-        {/* checking login details after submitting */}
+        /* checking login details after submitting */
         const submitHandler = e => {
             e.preventDefault ();
             
             Login(details);
         }
         
-        {/* creating form for logging in */}
+        /* creating form for logging in */
         
         return (
             <div className="login-wrapper">
                 <div className="login-inner">       
                     <form onSubmit={submitHandler}>
                         <h3>Sign In</h3>
-                        {(error !="") ? (<div className="error">{error}</div>) : ""}
+                        {(error !=="") ? (<div className="error">{error}</div>) : ""}
                         <div className="form-group">
                             <label>Email address</label>
                             <input type="email" 

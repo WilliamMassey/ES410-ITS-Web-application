@@ -3,7 +3,7 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import { Icon } from "leaflet"
 import * as carparkData from "../data/carparks.json";
 
-{/* setting new parking icon */}
+/* setting new parking icon */
 
 const parking = new Icon ({
   iconUrl: "/images/parking.png",

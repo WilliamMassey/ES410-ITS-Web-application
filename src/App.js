@@ -6,8 +6,9 @@ import LoginForm from "./components/login.component";
 import SignUp from "./components/signup.component";
 import Home from "./components/home.component";
 import About from "./components/about.component";
-import InternalHome from "./components/internal.home.component";
+import Map from "./components/map.component"
 import Logo from "./UniOfWarwickLogo.jpg"
+
 
 function App() {
 
@@ -22,14 +23,14 @@ function App() {
   const [error, setError] = useState("");
 
   const Login = details => {
-    console.log(details);
-
+    console.log(details)
+    
     if (details.email === adminUser.email && details.password === adminUser.password) {
       console.log("Logged in")
       setError("Details correct");
     } else {
-      console.log("Details wrong")
-      setError("Details wrong")
+      console.log("Incorrect details")
+      setError("Incorrect details")
     }
   }
 
@@ -61,9 +62,6 @@ function App() {
               <li className="nav-item">
                 <Link className="nav-link" to={"/sign-up"}>Sign up</Link>
               </li>
-              <li className="nav-item">
-                <Link className="nav-link" to={"/new-home"}>New Home</Link>
-              </li>
             </ul>
           </div>
         </div>
@@ -77,7 +75,7 @@ function App() {
         <Route path="/about" component={About} />
         <Route path="/sign-in" render={routeProps => <LoginForm {...routeProps} Login={Login} error={error} />} />
         <Route path="/sign-up" component={SignUp} />
-        <Route path="/new-home" component={InternalHome} />
+        <Route path="/map" component={Map} />
       </Switch>
     </div>
   </Router>);

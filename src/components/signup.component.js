@@ -11,7 +11,7 @@ const formData = {
 
 function SignUp() {
 
-    {/* storing sign up data */}
+    /* storing sign up data */
     const [state, setState] = useState(formData)
 
     const submitHandler = e => {
@@ -19,7 +19,7 @@ function SignUp() {
         console.log(state)
     }
 
-        {/* creating form for signing up */}
+        /* creating form for signing up */
         return (
             <div className="signup-wrapper">
                 <div className="signup-inner">
