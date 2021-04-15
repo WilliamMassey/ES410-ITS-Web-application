@@ -45,7 +45,7 @@ ROOT_URLCONF = 'smart_carpark.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [ BASE_DIR/'reactapp/build'], # This give access to django HTML templates created by react
+        'DIRS': [ BASE_DIR/'templates'], # This give access to django HTML legacy templates, will be replaced, once react is integrated 
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -111,8 +111,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 
-STATIC_URL = '/static/'
-# giving django access to the static files from the react app
-STATICFILES_DIRS = [BASE_DIR/'reactapp/build/static']
+STATIC_URL = '/static/'# giving django access to the static files (CSS, JavaScript, Images) legacy templates, will be changed to react
+STATICFILES_DIRS = [BASE_DIR/'templates/static']
 
 

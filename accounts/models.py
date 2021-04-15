@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import auth
 from datetime import datetime, timezone, timedelta, time, date
 from home.models import Carpark
-from .func import time_slot_default
+
 # Create your models here.
 
 # Details model stores additional data regarding users not included in the default django user model
@@ -24,9 +24,10 @@ class Car(models.Model):
         ('n', 'brown'),
         ('w', 'white')
     )
+    colour = models.CharField(max_length = 1, default = 's', choices = CAR_COLOURS) 
     car_number_plate = models.CharField(max_length = 7, primary_key = True, default = None)# car number plate is unique so is used as primary key
     # following attributes are visual to aid the identification of the car
-    colour = models.CharField(max_length = 1, default = 's', choices = CAR_COLOURS) 
+    
     manufacturer = models.CharField(max_length = 20, default = None)
 
 # User_Car_Mapping (UCM) maps users to cars 
