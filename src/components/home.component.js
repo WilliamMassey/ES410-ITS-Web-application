@@ -10,7 +10,7 @@ function Home(){
             { backgroundImage: `url(${Background}`,
             backgroundPosition: "center", 
             height: "100%" }}>
-            <div className="internal-home-title" style={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <div className="home-title" style={{ display: 'flex', justifyContent: 'flex-end' }}>
                 <h1>Find Parking on Campus in Seconds</h1>
             </div>
             <div className="parking-location-title" style={{ display: 'flex', justifyContent: 'flex-end' }}>

@@ -4,7 +4,7 @@ Django==3.0.3
 django-cors-headers==3.2.1
 djangorestframework==3.11.0
 Leaflet==1.7.1
-Python==3.9.1
+Python==3.9.4
 pytz==2021.1
 React==17.0.1
 React-DOM==17.0.1
