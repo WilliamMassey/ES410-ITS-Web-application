@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 function LoginForm({Login, error}) {
-        const [details, setDetails] = useState({email:"", password:""})
+        const [details, setDetails] = useState({username:"", password:""})
 
         /* checking login details after submitting */
         const submitHandler = e => {
@@ -24,7 +24,7 @@ function LoginForm({Login, error}) {
                             className="form-control" 
                             placeholder="Enter email" 
                             id="email" 
-                            onChange={e => setDetails({...details, email: e.target.value})} value ={details.email} />
+                            onChange={e => setDetails({...details, username: e.target.value})} value ={details.username} />
                         </div>
 
                         <div className="form-group">

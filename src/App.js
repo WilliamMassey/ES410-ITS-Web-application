@@ -22,17 +22,27 @@ function App() {
   const [user, setUser] = useState({name:"", email:""});
   const [error, setError] = useState("");
 
-  const Login = details => {
-    console.log(details)
-    
-    if (details.email === adminUser.email && details.password === adminUser.password) {
-      console.log("Logged in")
-      setError("Details correct");
-    } else {
-      console.log("Incorrect details")
-      setError("Incorrect details")
-    }
-  }
+  const Login = details => { 
+    console.log(details) 
+    fetch("http://localhost:8000/accounts/auth/", { 
+      method: "POST", 
+      headers: {"Content-Type": "application/json"}, 
+      body: JSON.stringify(details) 
+    }).then( 
+      data => { 
+        console.log(data) 
+      } 
+    ).catch(error => console.error) 
+     
+    if (details.email === adminUser.email && details.password === adminUser.password) { 
+      console.log("Logged in") 
+      setError("Details correct"); 
+    } else { 
+      console.log("Incorrect details") 
+      setError("Incorrect details") 
+    } 
+  } 
+
 
   const Logout = () => {
     console.log("Logout");
