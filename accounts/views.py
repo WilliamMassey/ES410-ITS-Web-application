@@ -7,6 +7,7 @@ from django.http import HttpResponse
 from .models import Car, User_Car_Mapping, Booking
 # importing carpark model from home model 
 from home.models  import Carpark
+from django.contrib.auth.models import User
 
 from .func import conv_html_datetime # importing function used to 
 from datetime import datetime, timedelta
@@ -16,7 +17,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 #importing accounts serializers 
-from .serializers import CarSerializer, BookingSerializer
+from .serializers import CarSerializer, BookingSerializer, UserSerializer 
 
 # is_car_user_mapped checks whether a mapping exists between the given user and the car with the given car numberplate. If it is mapped, a tupple is returned with the first element stating whether they are mapped and the second is the mapping. if not mapped the first element is given as false, and the second element is a response object, stating what the issue is.  
 def is_car_user_mapped(user, car_number_plate):
@@ -28,6 +29,26 @@ def is_car_user_mapped(user, car_number_plate):
         return False, Response("ERROR: MULTIPLE MAPPINGS EXIST BETWEEN THE CURRENT USER AND THE CAR WITH NUMBERPLATE " + car_number_plate)
     
     return True, user_car_mapping
+
+@api_view(['GET'])
+def user_view(request):
+    users = User.objects.all()
+
+    serializer = UserSerializer(data=users, many = True)
+    serializer.is_valid() 
+    return Response(serializer.data)
+
+@api_view(['POST'])
+def user_create(request):
+    serializer = UserSerializer(data = request.data)
+    if serializer.is_valid():
+        print(serializer.validated_data)
+        user = serializer.create(serializer.validated_data)
+        return Response(serializer.data)
+    else: 
+        return Response(serializer.errors)
+
+
 
 ##### APIs #####
 ## Notes

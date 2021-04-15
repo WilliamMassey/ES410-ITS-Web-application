@@ -27,6 +27,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework', #adding the rest frame work to the 
+    'rest_framework.authtoken',
+    'corsheaders',
     
 ]
 
