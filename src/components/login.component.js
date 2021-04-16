@@ -1,14 +1,27 @@
 import React, { useState } from "react";
 
-function LoginForm({Login, error}) {
+function LoginForm(props) {
         const [details, setDetails] = useState({username:"", password:""})
 
         /* checking login details after submitting */
         const submitHandler = e => {
             e.preventDefault ();
             
-            Login(details);
-        }
+            console.log(details) 
+            fetch("http://localhost:8000/accounts/auth/", { 
+                method: "POST", 
+                headers: {"Content-Type": "application/json"}, 
+                body: JSON.stringify(details) 
+            })
+            .then(data => data.json())
+            .then( 
+                data => { 
+                props.userLogin(data.token) 
+            } 
+            )
+            .catch(error => console.error) 
+        } 
+        
         
         /* creating form for logging in */
         
@@ -17,13 +30,12 @@ function LoginForm({Login, error}) {
                 <div className="login-inner">       
                     <form onSubmit={submitHandler}>
                         <h3>Sign In</h3>
-                        {(error !=="") ? (<div className="error">{error}</div>) : ""}
                         <div className="form-group">
-                            <label>Email address</label>
-                            <input type="email" 
+                            <label>Username</label>
+                            <input type="text" 
                             className="form-control" 
-                            placeholder="Enter email" 
-                            id="email" 
+                            placeholder="Enter username" 
+                            id="user" 
                             onChange={e => setDetails({...details, username: e.target.value})} value ={details.username} />
                         </div>
 

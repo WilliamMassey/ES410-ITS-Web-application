@@ -5,30 +5,41 @@ function SignUp() {
 
     /* storing sign up data */
     const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    uni: "",
-    registration: "",
+    first_name: "",
+    last_name: "",
+    username: "",
     email: "",
     password: "",
     })
 
-    const Register = formData => { 
-        console.log(formData) 
-        fetch("http://localhost:8000/accounts/register/", { 
-            method: "POST", 
-            headers: {"Content-Type": "application/json"}, 
-            body: JSON.stringify(formData) 
-        }).then( 
-            data => { 
-            console.log(data) 
-            } 
-        ).catch(error => console.error)
-    }
+    // const Register = formData => { 
+    //     console.log(formData) 
+    //     fetch("http://localhost:8000/accounts/user-create/", { 
+    //         method: "POST", 
+    //         headers: {"Content-Type": "application/json"}, 
+    //         body: JSON.stringify(formData) 
+    //     }).then( 
+    //         data => { 
+    //         console.log(data) 
+    //         } 
+    //     ).catch(error => console.error)
+    // }
 
     const submitHandler = e => {
         e.preventDefault()
-        console.log(formData)
+
+        console.log(formData) 
+        fetch("http://localhost:8000/accounts/user-create/", { 
+            method: "POST", 
+            headers: {"Content-Type": "application/json"}, 
+            body: JSON.stringify(formData) 
+        })
+        .then( data => data.json())
+        .then(
+            data => { 
+            console.log(data.token) 
+            } 
+        ).catch(error => console.error)
     }
 
         /* creating form for signing up */
@@ -43,9 +54,9 @@ function SignUp() {
                             className="form-control"
                             placeholder="Enter first name"
                             id="first-name" 
-                            value={formData.firstName}
+                            value={formData.first_name}
                             onChange = {e => {
-                                setFormData({...formData, firstName:e.target.value})
+                                setFormData({...formData, first_name:e.target.value})
                             }} />
                         </div>
 
@@ -55,25 +66,25 @@ function SignUp() {
                             className="form-control"
                             placeholder="Enter last name"
                             id="last-name" 
-                            value={formData.lastName}
+                            value={formData.last_name}
                             onChange = {e => {
-                                setFormData({...formData, lastName:e.target.value})
+                                setFormData({...formData, last_name:e.target.value})
                             }}/>
                         </div>
 
                         <div className="form-group">
-                            <label>University ID (Optional)</label>
+                            <label>Username (Optional)</label>
                             <input type="text"
                             className="form-control"
-                            placeholder="Enter University ID"
-                            id="uni" 
-                            value={formData.uni}
+                            placeholder="Enter Username"
+                            id="user" 
+                            value={formData.username}
                             onChange = {e => {
-                                setFormData({...formData, uni:e.target.value})
+                                setFormData({...formData, username:e.target.value})
                             }}/>
                         </div>
 
-                        <div className="form-group">
+                        {/* <div className="form-group">
                             <label>Vehicle Registration Number</label>
                             <input type="text"
                             className="form-control"
@@ -83,7 +94,7 @@ function SignUp() {
                             onChange = {e => {
                                 setFormData({...formData, registration:e.target.value})
                             }}/>
-                        </div>
+                        </div> */}
 
                         <div className="form-group">
                             <label>Email address</label>

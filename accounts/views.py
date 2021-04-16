@@ -75,12 +75,14 @@ def car_api(request):
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def car_view2(request):
+    print("car_view called")
     user  = request.user
     numberplateQS = User_Car_Mapping.objects.filter(user__exact = request.user)  
     numberplates = numberplateQS.values_list('car', flat = True) 
     cars = Car.objects.filter(car_number_plate__in = numberplates) 
     serializer = CarSerializer(data = cars, many = True)
     serializer.is_valid()
+    print(serializer.data)
     return Response(serializer.data)
 
 

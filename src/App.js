@@ -1,4 +1,4 @@
-import React, {useState} from 'react'; 
+import React, { useState } from 'react'; 
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 
@@ -12,43 +12,13 @@ import Logo from "./UniOfWarwickLogo.jpg"
 
 function App() {
 
-  {/* creating admin user to check login functionality */}
+  const [token, setToken] = useState("")
 
-  const adminUser = {
-    email:"admin@admin.com",
-    password: "admin123"
+  const userLogin = (token) => {
+    console.log(token);
   }
 
-  const [user, setUser] = useState({name:"", email:""});
-  const [error, setError] = useState("");
-
-  const Login = details => { 
-    console.log(details) 
-    fetch("http://localhost:8000/accounts/auth/", { 
-      method: "POST", 
-      headers: {"Content-Type": "application/json"}, 
-      body: JSON.stringify(details) 
-    }).then( 
-      data => { 
-        console.log(data) 
-      } 
-    ).catch(error => console.error) 
-      
-    if (details.email === adminUser.email && details.password === adminUser.password) { 
-      console.log("Logged in") 
-      setError("Details correct"); 
-    } else { 
-      console.log("Incorrect details") 
-      setError("Incorrect details") 
-    } 
-  } 
-
-
-  const Logout = () => {
-    console.log("Logout");
-  }
-
-  {/* adding the routes to the navbar */}
+  /* adding the routes to the navbar */
 
   return (<Router>
     <div className="App">
@@ -77,13 +47,13 @@ function App() {
         </div>
       </nav>
 
-      {/* assigning route locations */}
+     {/* assigning route locations */}
 
       <Switch>
         <Route exact path="/" component={Home} />
         <Route path="/home" component={Home} />
         <Route path="/about" component={About} />
-        <Route path="/sign-in" render={routeProps => <LoginForm {...routeProps} Login={Login} error={error} />} />
+        <Route path="/sign-in" render={(routeProps) => <LoginForm {...routeProps} userLogin={userLogin} />} />
         <Route path="/sign-up" component={SignUp} />
         <Route path="/map" component={Map} />
       </Switch>

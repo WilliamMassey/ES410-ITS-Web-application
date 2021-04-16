@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 
 function About() {
+
         return (
             <div className="about-title">
                 <h1>About us</h1>

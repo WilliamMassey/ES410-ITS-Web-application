@@ -27,3 +27,6 @@ __pycache__/
 
 # ignore eslintcache
 .eslintcache
+
+#ignore database
+mydtabase.sqlite3
