@@ -29,6 +29,6 @@ __pycache__/
 .eslintcache
 
 #ignore .pyc
-.pyc
+*.pyc
 #ignore database
 mydatabase.sqlite3
