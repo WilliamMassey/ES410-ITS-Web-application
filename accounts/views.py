@@ -13,7 +13,9 @@ from .func import conv_html_datetime # importing function used to
 from datetime import datetime, timedelta
 
 #rest framework imports
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 #importing accounts serializers 
@@ -69,6 +71,21 @@ def car_api(request):
     return Response(api_urls)
 
 # car_view returns a serialized list of all of the cars that the current user has registered
+@api_view(['GET']) 
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def car_view2(request):
+    user  = request.user
+    numberplateQS = User_Car_Mapping.objects.filter(user__exact = request.user)  
+    numberplates = numberplateQS.values_list('car', flat = True) 
+    cars = Car.objects.filter(car_number_plate__in = numberplates) 
+    serializer = CarSerializer(data = cars, many = True)
+    serializer.is_valid()
+    return Response(serializer.data)
+
+
+
+
 @api_view(['GET']) 
 def car_view(request):
     if request.user.is_authenticated: # check if the user is authenticated
