@@ -12,7 +12,7 @@ urlpatterns = [
     path('add_car', views.add_car, name ='add_car'),
 
     path('car-api', views.car_api, name ='car-api'),
-    path('car-view/', views.car_view, name ='car-view'),
+    path('car-view/', views.car_view2, name ='car-view'),
     path('car-detail/<str:car_number_plate>', views.car_detail, name ='car-detail'), 
     path('car-create/', views.car_create, name ='car-create'),
     path('car-update/<str:car_number_plate>', views.car_update, name ='car-update'),

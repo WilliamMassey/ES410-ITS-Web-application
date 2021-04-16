@@ -25,3 +25,5 @@ yarn-error.log*
 # ignore all pycache files, N.B. if this is a bady thing to do will undo
 __pycache__/
 
+# ignore eslintcache
+.eslintcache
