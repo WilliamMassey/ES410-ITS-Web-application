@@ -101,7 +101,23 @@ def car_view(request):
     else:
         return Response("ERROR: YOU ARE NOT LOGGED IN") # if the user isn't authenticated return error message
 
-# car_detail returns the serialized car object of the car with the numberplate given as the parameter "car_number_plate" 
+# car_detail returns the serialized car object of the car with the numberplate given as the parameter "car_number_plate"
+@api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def car_detail2(request, car_number_plate):
+
+    (is_mapped, result) = is_car_user_mapped(request.user, car_number_plate) 
+    if is_mapped: 
+        user_car_mapping = result
+    else: 
+        return result
+
+    car = user_car_mapping.car
+    serializer = CarSerializer(car, many = False) 
+    return Response(serializer.data)
+   
+
 @api_view(['GET'])
 def car_detail(request, car_number_plate):
     if request.user.is_authenticated: # check if the user is authenticated
@@ -119,6 +135,19 @@ def car_detail(request, car_number_plate):
 
 # car_create takes serialized car data and saves car object to database
 @api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def car_create2(request):
+    serializer = CarSerializer(data = request.data) 
+    if serializer.is_valid(): 
+        car = serializer.create(serializer.validated_data) 
+        mapping = User_Car_Mapping(car = car, user = request.user) 
+        return Response(serializer.data) 
+    else: 
+        return Response(serializer.errors) 
+    
+
+@api_view(['POST'])
 def car_create(request):
     if request.user.is_authenticated: # if user is authenticated 
         serializer = CarSerializer(data = request.data) # get a serializer object from data
@@ -127,12 +156,36 @@ def car_create(request):
             mapping = User_Car_Mapping(car = car, user = request.user) # create the UCM using the current user and the car just created
             mapping.save() # save the UCM
             return Response(serializer.data) # return the serialized object
+        elif "car with this car number plate already exists." in serializer.errors['car_number_plate'] and len(serializer.errors['car_number_plate'])==1:
+            car = Car.objects.get(car_number_plate = serializer.data['car_number_plate'])
+            user_car_mapping = User_Car_mapping.objects.create(car = car, user = request.user)
+            return Response("CAr already existed, so a mapping was added")
         else: 
             return Response(serializer.errors) # return the error response, outlining, what was wrong with the serialized data 
     else:
         return Response("ERROR: YOU ARE NOT LOGGED IN") # if the user isn't authenticated return error message
     
 # car_update changes the attributes of the car with the numberplate given as the parameter "car_number_plate" 
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def car_update2(request, car_number_plate): 
+    (is_mapped, result) = is_car_user_mapped(request.user, car_number_plate) 
+    if is_mapped:
+        user_car_mapping = result
+    else: 
+        return result
+
+    car = user_car_mapping.car 
+    serializer = CarSerializer(instance = car,data = request.data) 
+    if serializer.is_valid():
+        serializer.save() 
+        return Response(serializer.validated_data) 
+    else:
+            return Response(serializer.errors) 
+
+
+
 @api_view(['POST'])
 def car_update(request, car_number_plate): 
     if request.user.is_authenticated: # check if user is authenticated 
@@ -157,6 +210,28 @@ def car_update(request, car_number_plate):
 
 # car_delete deletes the car with the numberplate given as the parameter "car_number_plate"
 @api_view(['DELETE'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def car_delete2(request, car_number_plate):
+    (is_mapped, result) = is_car_user_mapped(request.user, car_number_plate) 
+    if is_mapped:
+        user_car_mapping = result
+    else: 
+        return result
+    other_mappings =  len(list(User_Car_Mapping.objects.filter(car = car_number_plate)))
+    print(other_mappings)
+    ### Need to add functionality that if there are more than one mappings associated with a single car, that the current users mapping is deleted rather than the car itself
+    
+    no_other_mappings =  len(list(User_Car_Mapping.objects.filter(car = car_number_plate)))
+    if no_other_mappings == 1:
+        car = user_car_mapping.car # get the car from UCM
+        car.delete() # delete the car object
+        return Response("THE CAR AND MAPPING WERE SUCCESSFULLY DELETED") # infrom frontend the car was successfully deleted
+    else:
+        user_car_mapping.delete()
+        return Response("THE USER_CAR_MAPPING WAS SUCCESSFULLY DELETED") # infrom frontend the car was successfully deleted
+
+@api_view(['DELETE'])
 def car_delete(request, car_number_plate):
     if request.user.is_authenticated: # check if user is logged in 
         
@@ -167,9 +242,14 @@ def car_delete(request, car_number_plate):
         else: 
             return result
         ### Need to add functionality that if there are more than one mappings associated with a single car, that the current users mapping is deleted rather than the car itself
-        car = user_car_mapping.car # get the car from UCM
-        car.delete() # delete the car object
-        return Response("THE CAR WAS SUCCESSFULLY DELETED") # infrom frontend the car was successfully deleted
+        no_other_mappings =  len(list(User_Car_Mapping.objects.filter(car = car_number_plate)))
+        if no_other_mappings == 1:
+            car = user_car_mapping.car # get the car from UCM
+            car.delete() # delete the car object
+            return Response("THE CAR AND MAPPING WERE SUCCESSFULLY DELETED") # infrom frontend the car was successfully deleted
+        else:
+            user_car_mapping.delete()
+            return Response("THE USER_CAR_MAPPING WAS SUCCESSFULLY DELETED") # infrom frontend the car was successfully deleted
 
     else: 
         return Response("ERROR: YOU ARE NOT LOGGED IN")
