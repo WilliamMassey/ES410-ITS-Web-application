@@ -14,7 +14,8 @@ function App() {
 
   const [token, setToken] = useState("")
 
-  const userLogin = (token) => {
+  const userLogin = (tok) => {
+    setToken(tok);
     console.log(token);
   }
 
@@ -52,7 +53,7 @@ function App() {
       <Switch>
         <Route exact path="/" component={Home} />
         <Route path="/home" component={Home} />
-        <Route path="/about" component={About} />
+        <Route path="/about" render={(routeProps) => <About {...routeProps} token={token} />} />
         <Route path="/sign-in" render={(routeProps) => <LoginForm {...routeProps} userLogin={userLogin} />} />
         <Route path="/sign-up" component={SignUp} />
         <Route path="/map" component={Map} />
