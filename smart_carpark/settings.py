@@ -25,7 +25,6 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
     'rest_framework', #adding the rest frame work to the 
     'rest_framework.authtoken',
     'corsheaders',
@@ -48,7 +47,6 @@ ROOT_URLCONF = 'smart_carpark.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [ BASE_DIR/'templates'], # This give access to django HTML legacy templates, will be replaced, once react is integrated 
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -120,9 +118,4 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
-
-
-STATIC_URL = '/static/'# giving django access to the static files (CSS, JavaScript, Images) legacy templates, will be changed to react
-STATICFILES_DIRS = [BASE_DIR/'templates/static']
-
 
