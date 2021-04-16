@@ -1,22 +1,34 @@
 import React, { useState } from "react";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 
-const formData = {
+function SignUp() {
+
+    /* storing sign up data */
+    const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
     uni: "",
     registration: "",
-    email: ""
-}
+    email: "",
+    password: "",
+    })
 
-function SignUp() {
-
-    /* storing sign up data */
-    const [state, setState] = useState(formData)
+    const Register = formData => { 
+        console.log(formData) 
+        fetch("http://localhost:8000/accounts/register/", { 
+            method: "POST", 
+            headers: {"Content-Type": "application/json"}, 
+            body: JSON.stringify(formData) 
+        }).then( 
+            data => { 
+            console.log(data) 
+            } 
+        ).catch(error => console.error)
+    }
 
     const submitHandler = e => {
         e.preventDefault()
-        console.log(state)
+        console.log(formData)
     }
 
         /* creating form for signing up */
@@ -31,9 +43,9 @@ function SignUp() {
                             className="form-control"
                             placeholder="Enter first name"
                             id="first-name" 
-                            value={state.firstName}
+                            value={formData.firstName}
                             onChange = {e => {
-                                setState({...state, firstName:e.target.value})
+                                setFormData({...formData, firstName:e.target.value})
                             }} />
                         </div>
 
@@ -43,9 +55,9 @@ function SignUp() {
                             className="form-control"
                             placeholder="Enter last name"
                             id="last-name" 
-                            value={state.lastName}
+                            value={formData.lastName}
                             onChange = {e => {
-                                setState({...state, lastName:e.target.value})
+                                setFormData({...formData, lastName:e.target.value})
                             }}/>
                         </div>
 
@@ -55,9 +67,9 @@ function SignUp() {
                             className="form-control"
                             placeholder="Enter University ID"
                             id="uni" 
-                            value={state.uni}
+                            value={formData.uni}
                             onChange = {e => {
-                                setState({...state, uni:e.target.value})
+                                setFormData({...formData, uni:e.target.value})
                             }}/>
                         </div>
 
@@ -67,9 +79,9 @@ function SignUp() {
                             className="form-control"
                             placeholder="Enter vehicle registration number"
                             id="regis-number" 
-                            value={state.registration}
+                            value={formData.registration}
                             onChange = {e => {
-                                setState({...state, registration:e.target.value})
+                                setFormData({...formData, registration:e.target.value})
                             }}/>
                         </div>
 
@@ -79,18 +91,22 @@ function SignUp() {
                             className="form-control" 
                             placeholder="Enter email" 
                             id="email" 
-                            value={state.email}
+                            value={formData.email}
                             onChange = {e => {
-                                setState({...state, email:e.target.value})
+                                setFormData({...formData, email:e.target.value})
                             }}/>
                         </div>
 
                         <div className="form-group">
-                                <label>Password</label>
-                                <input type="password" 
-                                className="form-control" 
-                                placeholder="Enter password" 
-                                id="password" />
+                            <label>Password</label>
+                            <input type="password" 
+                            className="form-control" 
+                            placeholder="Enter password" 
+                            id="password" 
+                            value={formData.password}
+                            onChange = {e => {
+                                setFormData({...formData, password:e.target.value})
+                            }}/>
                         </div>
 
                         <button type="submit" className="btn btn-primary btn-block">Submit</button>
