@@ -6,7 +6,7 @@ from django.http import HttpResponse
 # Importing models from accounts app
 from .models import Car, User_Car_Mapping, Booking
 # importing carpark model from home model 
-from home.models  import Carpark
+from home.models  import Carpark, Carpark_Data
 from django.contrib.auth.models import User
 
 from .func import conv_html_datetime # importing function used to 
@@ -31,6 +31,31 @@ def is_car_user_mapped(user, car_number_plate):
         return False, Response("ERROR: MULTIPLE MAPPINGS EXIST BETWEEN THE CURRENT USER AND THE CAR WITH NUMBERPLATE " + car_number_plate)
     
     return True, user_car_mapping
+
+def update_booking_data(start_datetime, end_datetime, carpark, is_delete):
+    print(f"start {start_datetime} end {end_datetime}")
+    current = start_datetime
+    current = current - timedelta(minutes=current.minute % 15,seconds=current.second,microseconds=current.microsecond)
+    end = end_datetime
+    end = end - timedelta(minutes=(end.minute % 15) - 15,seconds=end.second,microseconds=end.microsecond)
+    interval = timedelta(minutes = 15)
+    booking_data = Carpark_Data.objects.get(carpark= carpark,is_booking = True)
+    if is_delete:
+        change = -1
+    else:
+        change = 1
+    while end_datetime > current:
+        if booking_data.date != current.date:
+            booking_data = Carpark_Data.objects.get(carpark= carpark,is_booking = True)
+
+        
+        booking_data.data[current.time().isoformat()] +=change
+        booking_data.save()
+        
+        print(booking_data.data)
+        current += interval
+        
+
 
 @api_view(['GET'])
 def user_view(request):
@@ -283,6 +308,11 @@ def booking_api(request):
         'Update': '/booking-update/<str:pk>/',
         'Delete': '/booking-delete/<str:pk>/',
     }
+    print("booking api called")
+    start_datetime = datetime(year = 2021,month = 4, day = 17,hour=10,minute = 50)
+    end_datetime = datetime(year = 2021,month = 4, day = 17,hour=11,minute = 50)
+    carpark = Carpark.objects.get(id = 1)
+    update_booking_data(start_datetime, end_datetime, carpark,True)
     return Response(api_urls)
 
 # booking_detail does the equivalent to car_api
