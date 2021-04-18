@@ -16,11 +16,13 @@ function LoginForm(props) {
             .then(data => data.json())
             .then( 
                 data => { 
-                props.userLogin(data.token) 
+                props.userLogin(data.token)
+                console.log(data.token)
             } 
             )
             .catch(error => console.error) 
         } 
+        
         
         
         /* creating form for logging in */

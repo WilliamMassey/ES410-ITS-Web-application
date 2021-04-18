@@ -33,7 +33,7 @@ function Home(){
                 </div>
             </div>
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <button className="booking-button">Book Now!</button>
+                <Link to={"/sign-up"}><button className="booking-button">Book Now!</button></Link>
             </div>
         </div>
     );

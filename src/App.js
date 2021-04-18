@@ -15,8 +15,8 @@ function App() {
   const [token, setToken] = useState("")
 
   const userLogin = (tok) => {
-    setToken(tok);
-    console.log(token);
+    setToken(tok)
+    ;
   }
 
   /* adding the routes to the navbar */
