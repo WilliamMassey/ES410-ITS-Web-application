@@ -11,7 +11,7 @@ function LoginForm(props) {
 
         const renderRedirect = () => {
             if (redirect) {
-                return <Redirect to='/sign-in' />
+                return <Redirect to='/myaccount' />
             }
         }
 

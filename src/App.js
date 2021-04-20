@@ -8,6 +8,7 @@ import Home from "./components/home.component";
 import About from "./components/about.component";
 import Map from "./components/map.component";
 import Navbar from "./components/navbar.component";
+import MyAccount from "./components/myaccount.component"
 
 
 function App() {
@@ -27,7 +28,7 @@ function App() {
 
   return (<Router>
     <div className="App">
-      <Navbar/>
+      <Navbar isLoggedIn={isLoggedIn}/>
       {/* assigning route locations */}
 
       <Switch>
@@ -37,6 +38,7 @@ function App() {
         <Route path="/sign-in" render={(routeProps) => <LoginForm {...routeProps} userLoginToken={userLoginToken} isUserLoggedIn={isUserLoggedIn}/>} />
         <Route path="/sign-up" component={SignUp} />
         <Route path="/map" component={Map} />
+        <Route path="/myaccount" render={(routeProps) => <MyAccount {...routeProps} token={token} />} />
       </Switch>
     </div>
   </Router>);
