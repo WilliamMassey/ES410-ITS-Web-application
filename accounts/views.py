@@ -3,6 +3,7 @@ from django.contrib.auth.models import User, auth
 from django.contrib import messages
 from django.http import HttpResponse
 
+from django.core.mail import send_mail
 # Importing models from accounts app
 from .models import Car, User_Car_Mapping, Booking
 # importing carpark model from home model 
@@ -32,14 +33,14 @@ def is_car_user_mapped(user, car_number_plate):
     
     return True, user_car_mapping
 
-def update_booking_data(start_datetime, end_datetime, carpark, is_delete):
-    print(f"start {start_datetime} end {end_datetime}")
+def update_carpark_data(start_datetime, end_datetime, carpark, is_delete):
     current = start_datetime
     current = current - timedelta(minutes=current.minute % 15,seconds=current.second,microseconds=current.microsecond)
     end = end_datetime
     end = end - timedelta(minutes=(end.minute % 15) - 15,seconds=end.second,microseconds=end.microsecond)
     interval = timedelta(minutes = 15)
     booking_data = Carpark_Data.objects.get(carpark= carpark,is_booking = True)
+    print(booking_data.data)
     if is_delete:
         change = -1
     else:
@@ -48,11 +49,8 @@ def update_booking_data(start_datetime, end_datetime, carpark, is_delete):
         if booking_data.date != current.date:
             booking_data = Carpark_Data.objects.get(carpark= carpark,is_booking = True)
 
-        
         booking_data.data[current.time().isoformat()] +=change
         booking_data.save()
-        
-        print(booking_data.data)
         current += interval
         
 
@@ -63,6 +61,16 @@ def user_view(request):
 
     serializer = UserSerializer(data=users, many = True)
     serializer.is_valid() 
+    return Response(serializer.data)
+
+@api_view(['GET']) 
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def user_details(request):
+    serializer = UserSerializer(data=request.user) 
+
+    serializer.is_valid()
+
     return Response(serializer.data)
 
 @api_view(['POST'])
@@ -312,12 +320,23 @@ def booking_api(request):
     start_datetime = datetime(year = 2021,month = 4, day = 17,hour=10,minute = 50)
     end_datetime = datetime(year = 2021,month = 4, day = 17,hour=11,minute = 50)
     carpark = Carpark.objects.get(id = 1)
-    update_booking_data(start_datetime, end_datetime, carpark,True)
+    update_carpark_data(start_datetime, end_datetime, carpark,True)
     return Response(api_urls)
 
 # booking_detail does the equivalent to car_api
+
+@api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def booking_view2(request):
+    bookings = (Booking.objects.filter(user__exact = request.user)) 
+    serializer = BookingSerializer(data = bookings, many = True) 
+    serializer.is_valid()
+    return Response(serializer.data) 
+
 @api_view(['GET'])
 def booking_view(request):
+    
     if request.user.is_authenticated: # check if user is authenticated 
         bookings = (Booking.objects.filter(user__exact = request.user)) # gets all bookings associated with current user
         serializer = BookingSerializer(data = bookings, many = True) # Serializes all the bookings 
@@ -327,6 +346,20 @@ def booking_view(request):
         return Response("ERROR: YOU ARE NOT LOGGED IN")
 
 # booking_detail does the equivalent to car_detail 
+@api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def booking_detail2(request, pk):  
+    try: 
+        booking = Booking.objects.get(user = request.user, id = pk)
+    except Booking.DoesNotExist:
+        return Response("ERROR: CURRENT USER HAS NO BOOKING WITH ID " +str(pk))
+
+    serializer = BookingSerializer(booking, many = False)
+    
+    return Response(serializer.data)
+ 
+
 @api_view(['GET'])
 def booking_detail(request, pk):
     if request.user.is_authenticated: # check if user is authenticated 
@@ -342,7 +375,32 @@ def booking_detail(request, pk):
     else:
         return Response("ERROR: YOU ARE NOT LOGGED IN") 
 
-# booking_create does the equivalent to car_create 
+
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def booking_create2(request):
+    serializer = BookingSerializer(data = request.data) 
+    if serializer.is_valid(): 
+
+        car = serializer.validated_data['car']
+        carpark = serializer.validated_data['carpark']
+        start_datetime = serializer.validated_data['start_datetime']
+        end_datetime = serializer.validated_data['end_datetime']
+
+        (is_mapped, result) = is_car_user_mapped(request.user, car.car_number_plate)
+        if not is_mapped:
+            return result                
+        
+        update_carpark_data(start_datetime = start_datetime, end_datetime = end_datetime, carpark = carpark, is_delete = False)
+        serializer.save() 
+        # send_mail('Warwick Carpark Booking',f'Dear {request.user.first_name},\nYou have just made a booking for your car with the numberplate {car.car_number_plate}at the  {carpark.name} carpark from {start_datetime.isoformat()} to {end_datetime.isoformat()}.','will.a.c.massey@gmail.com',['w.massey.1@warwick.ac.uk'],fail_silently=False)
+        return Response(serializer.data) 
+    else:
+        return Response(serializer.errors)
+
+
+
 @api_view(['POST'])
 def booking_create(request):
     if request.user.is_authenticated: # check if the user authenticated
@@ -362,15 +420,51 @@ def booking_create(request):
                 return result                
             
             # add addtional restrictions datetime validity, 
-            
+            update_carpark_data(start_datetime = start_datetime, end_datetime = end_datetime, carpark = carpark, is_delete = False)
             serializer.save() # save the serializer 
+            # send_mail('Warwick Carpark Booking',f'Dear {request.user.first_name},\nYou have just made a booking for your car with the numberplate {car.car_number_plate}at the  {carpark.name} carpark from {start_datetime.isoformat()} to {end_datetime.isoformat()}.','will.a.c.massey@gmail.com',['w.massey.1@warwick.ac.uk'],fail_silently=False)
             return Response(serializer.data) # return serialized data to confirm 
+
         else:
             return Response(serializer.errors)
     else:
         return Response("ERROR: YOU ARE NOT LOGGED IN")
     
 # booking_update does the equivalent to car_update 
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def booking_update2(request, pk):    
+    try: 
+        booking = Booking.objects.get(id = pk)
+    except Booking.DoesNotExist:
+        return Response("ERROR: NO BOOKING WITH ID " +str(pk) +" EXISTS")
+
+    if booking.user != request.user:
+        return Response("ERROR: THE BOOKING WITH ID " +str(pk) + " DOESN'T BELONG TO THE CURRENT USER")
+    
+    serializer = BookingSerializer(instance = booking, data = request.data)
+
+    if serializer.is_valid():
+
+        user = serializer.validated_data['user']
+        car = serializer.validated_data['car']
+        carpark = serializer.validated_data['carpark']
+        start_datetime = serializer.validated_data['start_datetime']
+        end_datetime = serializer.validated_data['end_datetime']
+
+        (is_mapped, result) = is_car_user_mapped(request.user, car.car_number_plate)
+        if not is_mapped:
+            return result 
+        update_carpark_data(start_datetime = booking.start_datetime, end_datetime = booking.end_datetime, carpark = booking.carpark, is_delete = True)
+        update_carpark_data(start_datetime = start_datetime, end_datetime = end_datetime, carpark = carpark, is_delete = False)
+        # send_mail('Warwick Carpark Booking',f'Dear {request.user.first_name},\nYou have just changed a booking for your car with the numberplate {booking.car.car_number_plate} at the {booking.carpark.name} carpark from {booking.start_datetime.isoformat()} to {booking.end_datetime.isoformat()} to a booking at the {carpark.name} carpark from {start_datetime.isoformat()} to {end_datetime.isoformat()}.','will.a.c.massey@gmail.com',['w.massey.1@warwick.ac.uk'],fail_silently=False)
+        serializer.save() 
+        return Response(serializer.data) 
+    else:
+        return Response(serializer.errors)
+
+
 @api_view(['POST'])
 def booking_update(request, pk):
     if request.user.is_authenticated:
@@ -387,6 +481,7 @@ def booking_update(request, pk):
 
         if serializer.is_valid(): # check if the serializer is valid
             # get data from serializer
+            
             user = serializer.validated_data['user']
             car = serializer.validated_data['car']
             carpark = serializer.validated_data['carpark']
@@ -398,9 +493,10 @@ def booking_update(request, pk):
             (is_mapped, result) = is_car_user_mapped(request.user, car.car_number_plate)
             if not is_mapped:
                 return result 
-            
+            update_carpark_data(start_datetime = booking.start_datetime, end_datetime = booking.end_datetime, carpark = booking.carpark, is_delete = True)
             # add addtional restrictions datetime validity, 
-            
+            update_carpark_data(start_datetime = start_datetime, end_datetime = end_datetime, carpark = carpark, is_delete = False)
+            # send_mail('Warwick Carpark Booking',f'Dear {request.user.first_name},\nYou have just changed a booking for your car with the numberplate {booking.car.car_number_plate} at the {booking.carpark.name} carpark from {booking.start_datetime.isoformat()} to {booking.end_datetime.isoformat()} to a booking at the {carpark.name} carpark from {start_datetime.isoformat()} to {end_datetime.isoformat()}.','will.a.c.massey@gmail.com',['w.massey.1@warwick.ac.uk'],fail_silently=False)
             serializer.save() # save serialized data
             return Response(serializer.data) # return updated serialized data as confirmation
         else:
@@ -410,18 +506,38 @@ def booking_update(request, pk):
 
 # booking_delete does the equivalent to car_delete 
 @api_view(['DELETE'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def booking_delete2(request, pk):
+    try:
+        booking = Booking.objects.get(id = pk)
+    except Booking.DoesNotExist:
+        return Response("Booking doesn't exist")
+    booking_user = booking.user 
+    if booking_user != request.user: 
+        return Response("ERROR: You do no have acess to this booking")
+    update_carpark_data(start_datetime = booking.start_datetime, end_datetime = booking.end_datetime, carpark = booking.carpark, is_delete = True)
+    # send_mail('Warwick Carpark Booking',f'Dear {request.user.first_name},\nYou have just deleted your booking for your car with the numberplate {booking.car.car_number_plate} at the {booking.carpark.name} carpark from {booking.start_datetime.isoformat()} to {booking.end_datetime.isoformat()}.','will.a.c.massey@gmail.com',['w.massey.1@warwick.ac.uk'],fail_silently=False)
+    booking.delete()
+    
+    return Response("booking id " + str(pk) + " has been successfully deleted") 
+
+
+@api_view(['DELETE'])
 def booking_delete(request, pk):
     if request.user.is_authenticated: # check if user is authenticated 
         # check a booking with the id "pk" exists
         try:
-            booking = Booking.ojbects.get(id = pk)
-        except DoesNotExist:
+            booking = Booking.objects.get(id = pk)
+        except Booking.DoesNotExist:
             return Response("Booking doesn't exist")
         booking_user = booking.user 
         if booking_user != request.user: # check whether the booking is associated with the current user
             return Response("ERROR: You do no have acess to this booking")
-        
+        update_carpark_data(start_datetime = booking.start_datetime, end_datetime = booking.end_datetime, carpark = booking.carpark, is_delete = True)
+        # send_mail('Warwick Carpark Booking',f'Dear {request.user.first_name},\nYou have just deleted your booking for your car with the numberplate {booking.car.car_number_plate} at the {booking.carpark.name} carpark from {booking.start_datetime.isoformat()} to {booking.end_datetime.isoformat()}.','will.a.c.massey@gmail.com',['w.massey.1@warwick.ac.uk'],fail_silently=False)
         booking.delete() # delete the booking
+        
         return Response("booking id " + str(pk) + " has been successfully deleted") # return message stating that it has been successfully deleted
     else: 
         return Response("ERROR: YOU ARE NOT LOGGED IN")

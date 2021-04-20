@@ -44,6 +44,22 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'smart_carpark.urls'
+ 
+
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# AUTHENTICATION_BACKENDS = (
+#     # Needed to login by username in Django admin, regardless of `allauth`
+#     "django.contrib.auth.backends.ModelBackend",
+
+#     # `allauth` specific authentication methods, such as login by e-mail
+#     "allauth.account.auth_backends.AuthenticationBackend",
+# )
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'will.a.c.massey@gmail.com'
+EMAIL_HOST_PASSWORD = "******"
 
 TEMPLATES = [
     {
