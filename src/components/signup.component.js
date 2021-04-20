@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import Navbar from "./navbar.component";
 
 function SignUp() {
 
@@ -45,6 +46,7 @@ function SignUp() {
         /* creating form for signing up */
         return (
             <div className="signup-wrapper">
+                <Navbar/>
                 <div className="signup-inner">
                     <form onSubmit = {submitHandler}>
                         <h3>Create an account to continue</h3>
@@ -125,7 +127,7 @@ function SignUp() {
                         {/* linking to login page */}
 
                         <p className="have-account text-right">
-                            If you have an account <Link to={"/sign-in"}>login here</Link>
+                            Already have an account? <Link to={"/sign-in"}>Sign in here</Link>
                         </p>
                         
                     </form>

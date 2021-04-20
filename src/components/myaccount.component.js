@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import Navbar from "./navbar.component";
+import PrivNavbar from "./privnavbar.component";
 
 class MyAccount extends Component {
       constructor(props){
@@ -34,13 +34,17 @@ class MyAccount extends Component {
          render(){
                return (
                   <div className="about-title">
-                     <Navbar isLoggedIn={this.state.isLoggedIn}/>
+                     <PrivNavbar/>
                      <h2>Your Vehicle(s):</h2>
                      {this.state.isLoading ? "" : this.state.cars.map( car => {
                         return <h3 key={car.id}>Vehicle Manufacturer: {car.manufacturer}</h3>
+                     })}
+                     {this.state.isLoading ? "" : this.state.cars.map( car => {
+                        return <h3 key={car.id}>Number Plate: {car.car_number_plate}</h3>
+                     })}
+                     {this.state.isLoading ? "" : this.state.cars.map( car => {
+                        return <h3 key={car.id}>Vehicle Colour: {car.colour}</h3>
                      })} 
-                    {/* <h3>{this.state.isLoading ? "" : "Vehicle Manufacturer:"{this.state.cars[0].maunfacturer}}</h3> */}
-                     <button>update</button>
                   </div>
             );
          }

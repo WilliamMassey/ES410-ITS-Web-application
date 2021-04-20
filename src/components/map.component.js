@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import { Icon } from "leaflet"
 import * as carparkData from "../data/carparks.json";
+import Navbar from "./navbar.component";
 
 /* setting new parking icon */
 
@@ -18,6 +19,7 @@ function Map(){
   /* initialising map from OpenStreetMap */
 
   <div  className="map">
+    <Navbar/>
     <MapContainer center ={[52.382921, -1.564097]} zoom ={15}>
       <TileLayer
         attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'

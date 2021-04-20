@@ -43,7 +43,7 @@ function LoginForm(props) {
         
         return (
             <div className="login-wrapper">
-                <Navbar isLoggedIn={isLoggedIn}/>
+                <Navbar/>
                     <div className="login-wrapper">
                         <div className="login-inner">       
                             <form onSubmit={submitHandler}>

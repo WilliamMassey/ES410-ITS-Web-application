@@ -2,6 +2,7 @@ import React from "react";
 import Background from '../BackgroundCarpark.jpg';
 import Location from '../Location.png';
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import Navbar from "./navbar.component";
 
 
 function Home(){
@@ -10,6 +11,7 @@ function Home(){
             { backgroundImage: `url(${Background}`,
             backgroundPosition: "center", 
             height: "100%" }}>
+            <Navbar/>
             <div className="home-title" style={{ display: 'flex', justifyContent: 'flex-end' }}>
                 <h1>Find Parking on Campus in Seconds</h1>
             </div>
