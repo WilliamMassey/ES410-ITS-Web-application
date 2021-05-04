@@ -15,10 +15,10 @@ def time_slot_default():
 class Carpark(models.Model):
     name = models.CharField(max_length = 20, primary_key = True)
     total_places = models.SmallIntegerField()
-    geometry =  models.JSONField(default = {
-        "type" :"point",
-        "coordinates": [52.379084, -1.567667]
-    })
+    # geometry =  models.JSONField(default = {
+    #     "type" :"point",
+    #     "coordinates": [52.379084, -1.567667]
+    # })
 
 
 class Carpark_Data(models.Model):
