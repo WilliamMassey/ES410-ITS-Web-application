@@ -67,9 +67,7 @@ def user_view(request):
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def user_details(request):
-    serializer = UserSerializer(data=request.user) 
-
-    serializer.is_valid()
+    serializer = UserSerializer(request.user) 
 
     return Response(serializer.data)
 

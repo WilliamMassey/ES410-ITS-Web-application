@@ -11,6 +11,7 @@ import Navbar from "./components/navbar.component";
 import MyAccount from "./components/myaccount.component";
 import MyBookings from "./components/mybookings.component";
 import MakeBookings from "./components/makebookings.component";
+import AddCar from "./components/addcar.component";
 
 
 function App() {
@@ -42,6 +43,7 @@ function App() {
         <Route path="/myaccount" render={(routeProps) => <MyAccount {...routeProps} token={token} />} />
         <Route path="/mybookings" render={(routeProps) => <MyBookings {...routeProps} token={token} />} />
         <Route path="/makebookings" render={(routeProps) => <MakeBookings {...routeProps} token={token} />} />
+        <Route path="/addcar" render={(routeProps) => <AddCar {...routeProps} token={token} />} />
       </Switch>
     </div>
   </Router>);
