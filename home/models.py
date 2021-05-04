@@ -15,16 +15,13 @@ def time_slot_default():
 class Carpark(models.Model):
     name = models.CharField(max_length = 20, primary_key = True)
     total_places = models.SmallIntegerField()
-    # geometry =  models.JSONField(default = {
-    #     "type" :"point",
-    #     "coordinates": [52.379084, -1.567667]
-    # })
+
 
 
 class Carpark_Data(models.Model):
     date = models.DateField() 
     is_booking = models.BooleanField()
-    carpark = models.ForeignKey('home.Carpark', on_delete = models.CASCADE)
+    #carpark = models.ForeignKey('home.Carpark', on_delete = models.CASCADE)
     data =  models.JSONField(default = time_slot_default())
 
 class Live_Feed(models.Model):

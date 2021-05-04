@@ -41,6 +41,6 @@ class Booking(models.Model):
     car = models.ForeignKey(Car, on_delete = models.CASCADE, default = None) # which car has the booking been made with
     start_datetime = models.DateTimeField(default = datetime(2020,12,31,12,0)) # the date and time of the start of the booking
     end_datetime = models.DateTimeField(default = datetime(2020,12,31,13,0)) # # the date and time of the end of the booking
-    carpark = models.ForeignKey('home.Carpark', on_delete = models.CASCADE, default = None) # which carpark the booking is 
+    #carpark = models.ForeignKey('home.Carpark', on_delete = models.CASCADE, default = None) # which carpark the booking is 
   
 
