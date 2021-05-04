@@ -21,7 +21,7 @@ class Carpark(models.Model):
 class Carpark_Data(models.Model):
     date = models.DateField() 
     is_booking = models.BooleanField()
-    #carpark = models.ForeignKey('home.Carpark', on_delete = models.CASCADE)
+    carpark = models.ForeignKey('home.Carpark', on_delete = models.CASCADE)
     data =  models.JSONField(default = time_slot_default())
 
 class Live_Feed(models.Model):
