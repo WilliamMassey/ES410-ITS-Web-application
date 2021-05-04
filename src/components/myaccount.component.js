@@ -39,6 +39,7 @@ class MyAccount extends Component {
          this.setState({user: res2})
          console.log(this.props.token)
          console.log(this.state.cars[0])
+         console.log(this.state.user[0])
          this.setState({isLoading:false})
          this.setState({isLoggedIn:false})}
          )

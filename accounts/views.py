@@ -62,8 +62,8 @@ def user_view(request):
     return Response(serializer.data)
 
 @api_view(['GET']) 
-# @authentication_classes([TokenAuthentication])
-# @permission_classes([IsAuthenticated])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def user_details(request):
     serializer = UserSerializer(request.user) 
 
