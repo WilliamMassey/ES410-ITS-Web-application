@@ -65,10 +65,8 @@ def user_view(request):
 # @authentication_classes([TokenAuthentication])
 # @permission_classes([IsAuthenticated])
 def user_details(request):
-    print(request.user.username)
     serializer = UserSerializer(request.user) 
-    
-    
+
     return Response(serializer.data)
 @api_view(['POST'])
 def user_create(request):
