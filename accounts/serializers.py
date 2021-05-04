@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 from .models import Car, Booking
+from home.models import Carpark
 from django.contrib.auth.models import User
 from home.serializers import CarparkSerializer
 
@@ -34,3 +35,10 @@ class BookingSerializer(serializers.ModelSerializer):
   class Meta():
     model = Booking
     fields = '__all__'
+
+class CarparkSerializer(serializers.ModelSerializer):
+  # makes the model being serialized is the Booking model and serializes all of the fields
+  class Meta():
+    model = Carpark
+    fields = '__all__'
+

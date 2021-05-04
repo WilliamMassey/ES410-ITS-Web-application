@@ -53,8 +53,6 @@ def update_carpark_data(start_datetime, end_datetime, carpark, is_delete):
         booking_data.save()
         current += interval
         
-
-
 @api_view(['GET'])
 def user_view(request):
     users = User.objects.all()
@@ -64,15 +62,14 @@ def user_view(request):
     return Response(serializer.data)
 
 @api_view(['GET']) 
-@authentication_classes([TokenAuthentication])
-@permission_classes([IsAuthenticated])
+# @authentication_classes([TokenAuthentication])
+# @permission_classes([IsAuthenticated])
 def user_details(request):
-    serializer = UserSerializer(data=request.user) 
-
-    serializer.is_valid()
-
+    print(request.user.username)
+    serializer = UserSerializer(request.user) 
+    
+    
     return Response(serializer.data)
-
 @api_view(['POST'])
 def user_create(request):
     serializer = UserSerializer(data = request.data)
@@ -117,9 +114,6 @@ def car_view2(request):
     serializer.is_valid()
     print(serializer.data)
     return Response(serializer.data)
-
-
-
 
 @api_view(['GET']) 
 def car_view(request):
@@ -233,8 +227,6 @@ def car_update2(request, car_number_plate):
         return Response(serializer.validated_data) 
     else:
             return Response(serializer.errors) 
-
-
 
 @api_view(['POST'])
 def car_update(request, car_number_plate): 
@@ -541,3 +533,12 @@ def booking_delete(request, pk):
         return Response("booking id " + str(pk) + " has been successfully deleted") # return message stating that it has been successfully deleted
     else: 
         return Response("ERROR: YOU ARE NOT LOGGED IN")
+
+
+
+@api_view(['GET'])
+def carpark_view(request):
+    carparks = Carpark.objects.all() # gets all bookings associated with current user
+    serializer = CarparkSerializer(data = carparks, many = True) # Serializes all the bookings 
+    serializer.is_valid() # check is valid
+    return Response(serializer.data) # return serialized data

@@ -35,7 +35,6 @@ class User_Car_Mapping(models.Model):
     user = models.ForeignKey('auth.User', on_delete=models.CASCADE, default = None)
     car =  models.ForeignKey(Car, on_delete=models.CASCADE, default = None)
 
-
 # Booking model stores data regarding a booking 
 class Booking(models.Model):
     user = models.ForeignKey('auth.User', on_delete=models.CASCADE, default = None)# who has made the booking

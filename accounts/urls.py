@@ -23,6 +23,7 @@ urlpatterns = [
     path('user-detail/', views.user_details, name='user-detail'),
     path('user-create/', views.user_create, name='user-create'),
 
+    path('carpark-view/', views.carpark_view, name='carpark-view'),
     path('auth/', obtain_auth_token)
 
 ]
