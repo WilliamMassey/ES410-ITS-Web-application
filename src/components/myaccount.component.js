@@ -9,6 +9,7 @@ class MyAccount extends Component {
          this.state = {
             cars:[],
             user:[],
+            booking:[],
             isLoading: true,
             isLoggedIn: true
          }
@@ -27,19 +28,27 @@ class MyAccount extends Component {
          headers: {
          'Content-Type': 'application/json',
          Authorization: `Token ${this.props.token}`}
+         }),
+         fetch('http://localhost:8000/accounts/booking-view/', {
+         method: 'GET',
+         headers: {
+         'Content-Type': 'application/json',
+         Authorization: `Token ${this.props.token}`}
          })])
 
-         .then(([res1, res2]) => {
-            return Promise.all([res1.json(), res2.json()])
+         .then(([res1, res2, res3]) => {
+            return Promise.all([res1.json(), res2.json(), res3.json()])
          })
 
          .then(
-            ([res1, res2]) => {
+            ([res1, res2, res3]) => {
          this.setState({cars: res1})
          this.setState({user: res2})
+         this.setState({booking: res3})
          console.log(this.props.token)
          console.log(this.state.cars[0])
          console.log(this.state.user[0])
+         console.log(this.state.booking[0])
          this.setState({isLoading:false})
          this.setState({isLoggedIn:false})}
          )
@@ -47,12 +56,18 @@ class MyAccount extends Component {
          }
 
          render(){
+            
+            // let start_time = ""
+
+            // start_time = start_time
+
+            // {this.state.isLoading ? "" : this.state.booking[0] == null ? "" : start_time = this.state.booking[0].start_datetime.replace('T',' ').replace('Z','')}
                return (
                   <div className="account-title">
                      <PrivNavbar/>
-                     <h2>My Account</h2>
                      <div className="row">
                         <div className="column">
+                           <h2>My Account</h2>
                            <div className="general-wrapper">
                               <div className="general-inner">
                                  <form>
@@ -124,10 +139,38 @@ class MyAccount extends Component {
                                  </form>
                               </div>
                            </div>
-                           <div className="general-wrapper">
-                              <div className="general-inner">
+                           <div className="booking-wrapper">
+                              <div className="booking-inner">
                                  <form>
                                     <h4>My Bookings</h4>
+                                    <div className="form-group">
+                                       <label>Location</label>
+                                       <input type="text" 
+                                       className="form-control" 
+                                       value={this.state.isLoading ? "" : this.state.booking[0] == null ? "" : this.state.booking[0].carpark}
+                                       />
+                                    </div>
+                                    <div className="row">
+                                       <div className="column-booking-left">
+                                          <div className="form-group">
+                                             <label>Start time (yyyy-mm-dd):</label>
+                                             <input type="text" 
+                                             className="form-control" 
+                                             value={this.state.isLoading ? "" : this.state.booking[0] == null ? "" : this.state.booking[0].start_datetime.replace('T',' ').replace(':00Z','')}
+                                             />
+                                          </div>
+                                       </div>
+                                       <div className="column-booking-right">
+                                          <div className="form-group">
+                                             <label>End time (yyyy-mm-dd):</label>
+                                             <input type="text" 
+                                             className="form-control" 
+                                             value={this.state.isLoading ? "" : this.state.booking[0] == null ? "" : this.state.booking[0].end_datetime.replace('T',' ').replace(':00Z','')}
+                                             />
+                                          </div>
+                                       </div>
+                                    </div>
+                                    <Link to={"/mybookings"}><button className="booking-button-2">Add Booking</button></Link>
                                  </form>
                               </div>
                            </div>
