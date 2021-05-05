@@ -307,10 +307,10 @@ def booking_api(request):
         'Delete': '/booking-delete/<str:pk>/',
     }
     print("booking api called")
-    start_datetime = datetime(year = 2021,month = 4, day = 17,hour=10,minute = 50)
-    end_datetime = datetime(year = 2021,month = 4, day = 17,hour=11,minute = 50)
-    carpark = Carpark.objects.get(id = 1)
-    update_carpark_data(start_datetime, end_datetime, carpark,True)
+    # start_datetime = datetime(year = 2021,month = 4, day = 17,hour=10,minute = 50)
+    # end_datetime = datetime(year = 2021,month = 4, day = 17,hour=11,minute = 50)
+    # carpark = Carpark.objects.get(id = 1)
+    # update_carpark_data(start_datetime, end_datetime, carpark,True)
     return Response(api_urls)
 
 # booking_detail does the equivalent to car_api
@@ -382,7 +382,7 @@ def booking_create2(request):
         if not is_mapped:
             return result                
         
-        update_carpark_data(start_datetime = start_datetime, end_datetime = end_datetime, carpark = carpark, is_delete = False)
+        # update_carpark_data(start_datetime = start_datetime, end_datetime = end_datetime, carpark = carpark, is_delete = False)
         serializer.save() 
         # send_mail('Warwick Carpark Booking',f'Dear {request.user.first_name},\nYou have just made a booking for your car with the numberplate {car.car_number_plate}at the  {carpark.name} carpark from {start_datetime.isoformat()} to {end_datetime.isoformat()}.','will.a.c.massey@gmail.com',['w.massey.1@warwick.ac.uk'],fail_silently=False)
         return Response(serializer.data) 
@@ -410,7 +410,7 @@ def booking_create(request):
                 return result                
             
             # add addtional restrictions datetime validity, 
-            update_carpark_data(start_datetime = start_datetime, end_datetime = end_datetime, carpark = carpark, is_delete = False)
+            # update_carpark_data(start_datetime = start_datetime, end_datetime = end_datetime, carpark = carpark, is_delete = False)
             serializer.save() # save the serializer 
             # send_mail('Warwick Carpark Booking',f'Dear {request.user.first_name},\nYou have just made a booking for your car with the numberplate {car.car_number_plate}at the  {carpark.name} carpark from {start_datetime.isoformat()} to {end_datetime.isoformat()}.','will.a.c.massey@gmail.com',['w.massey.1@warwick.ac.uk'],fail_silently=False)
             return Response(serializer.data) # return serialized data to confirm 
@@ -446,8 +446,8 @@ def booking_update2(request, pk):
         (is_mapped, result) = is_car_user_mapped(request.user, car.car_number_plate)
         if not is_mapped:
             return result 
-        update_carpark_data(start_datetime = booking.start_datetime, end_datetime = booking.end_datetime, carpark = booking.carpark, is_delete = True)
-        update_carpark_data(start_datetime = start_datetime, end_datetime = end_datetime, carpark = carpark, is_delete = False)
+        # update_carpark_data(start_datetime = booking.start_datetime, end_datetime = booking.end_datetime, carpark = booking.carpark, is_delete = True)
+        # update_carpark_data(start_datetime = start_datetime, end_datetime = end_datetime, carpark = carpark, is_delete = False)
         # send_mail('Warwick Carpark Booking',f'Dear {request.user.first_name},\nYou have just changed a booking for your car with the numberplate {booking.car.car_number_plate} at the {booking.carpark.name} carpark from {booking.start_datetime.isoformat()} to {booking.end_datetime.isoformat()} to a booking at the {carpark.name} carpark from {start_datetime.isoformat()} to {end_datetime.isoformat()}.','will.a.c.massey@gmail.com',['w.massey.1@warwick.ac.uk'],fail_silently=False)
         serializer.save() 
         return Response(serializer.data) 
@@ -483,9 +483,9 @@ def booking_update(request, pk):
             (is_mapped, result) = is_car_user_mapped(request.user, car.car_number_plate)
             if not is_mapped:
                 return result 
-            update_carpark_data(start_datetime = booking.start_datetime, end_datetime = booking.end_datetime, carpark = booking.carpark, is_delete = True)
+            # update_carpark_data(start_datetime = booking.start_datetime, end_datetime = booking.end_datetime, carpark = booking.carpark, is_delete = True)
             # add addtional restrictions datetime validity, 
-            update_carpark_data(start_datetime = start_datetime, end_datetime = end_datetime, carpark = carpark, is_delete = False)
+            # update_carpark_data(start_datetime = start_datetime, end_datetime = end_datetime, carpark = carpark, is_delete = False)
             # send_mail('Warwick Carpark Booking',f'Dear {request.user.first_name},\nYou have just changed a booking for your car with the numberplate {booking.car.car_number_plate} at the {booking.carpark.name} carpark from {booking.start_datetime.isoformat()} to {booking.end_datetime.isoformat()} to a booking at the {carpark.name} carpark from {start_datetime.isoformat()} to {end_datetime.isoformat()}.','will.a.c.massey@gmail.com',['w.massey.1@warwick.ac.uk'],fail_silently=False)
             serializer.save() # save serialized data
             return Response(serializer.data) # return updated serialized data as confirmation
@@ -506,7 +506,7 @@ def booking_delete2(request, pk):
     booking_user = booking.user 
     if booking_user != request.user: 
         return Response("ERROR: You do no have acess to this booking")
-    update_carpark_data(start_datetime = booking.start_datetime, end_datetime = booking.end_datetime, carpark = booking.carpark, is_delete = True)
+    # update_carpark_data(start_datetime = booking.start_datetime, end_datetime = booking.end_datetime, carpark = booking.carpark, is_delete = True)
     # send_mail('Warwick Carpark Booking',f'Dear {request.user.first_name},\nYou have just deleted your booking for your car with the numberplate {booking.car.car_number_plate} at the {booking.carpark.name} carpark from {booking.start_datetime.isoformat()} to {booking.end_datetime.isoformat()}.','will.a.c.massey@gmail.com',['w.massey.1@warwick.ac.uk'],fail_silently=False)
     booking.delete()
     
@@ -524,7 +524,7 @@ def booking_delete(request, pk):
         booking_user = booking.user 
         if booking_user != request.user: # check whether the booking is associated with the current user
             return Response("ERROR: You do no have acess to this booking")
-        update_carpark_data(start_datetime = booking.start_datetime, end_datetime = booking.end_datetime, carpark = booking.carpark, is_delete = True)
+        # update_carpark_data(start_datetime = booking.start_datetime, end_datetime = booking.end_datetime, carpark = booking.carpark, is_delete = True)
         # send_mail('Warwick Carpark Booking',f'Dear {request.user.first_name},\nYou have just deleted your booking for your car with the numberplate {booking.car.car_number_plate} at the {booking.carpark.name} carpark from {booking.start_datetime.isoformat()} to {booking.end_datetime.isoformat()}.','will.a.c.massey@gmail.com',['w.massey.1@warwick.ac.uk'],fail_silently=False)
         booking.delete() # delete the booking
         

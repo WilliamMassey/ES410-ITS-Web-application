@@ -44,7 +44,7 @@ def add_new_booking_data():
 
 def anpr_db_updater():
     # Every 5 minutes update the live feed database
-    schedule.every(15).minutes.do(remind_bookings)
+    # schedule.every(15).minutes.do(remind_bookings)
     #schedule.every(5).minutes.do(update_from_anpr_db)
     # schedule.every().day.at("23:59").do(add_new_booking_data)
     schedule.run_all()

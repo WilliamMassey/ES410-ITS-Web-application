@@ -39,8 +39,10 @@ class User_Car_Mapping(models.Model):
 class Booking(models.Model):
     user = models.ForeignKey('auth.User', on_delete=models.CASCADE, default = None)# who has made the booking
     car = models.ForeignKey(Car, on_delete = models.CASCADE, default = None) # which car has the booking been made with
-    start_datetime = models.DateTimeField(default = datetime(2020,12,31,12,0)) # the date and time of the start of the booking
-    end_datetime = models.DateTimeField(default = datetime(2020,12,31,13,0)) # # the date and time of the end of the booking
+    # start_datetime = models.DateTimeField(default = datetime(2020,12,31,12,0)) # the date and time of the start of the booking
+    # end_datetime = models.DateTimeField(default = datetime(2020,12,31,13,0)) # # the date and time of the end of the booking
+    start_datetime = models.CharField(max_length=30,default = "")
+    end_datetime = models.CharField(max_length=30,default = "")
     carpark = models.ForeignKey('home.Carpark', on_delete = models.CASCADE, default = None) # which carpark the booking is 
   
 
