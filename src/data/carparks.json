@@ -5,7 +5,7 @@
 			"properties": {
 				"CARPARK_ID": 1,
 				"NAME": "Sports and Wellness Hub Car Park",
-				"DESCRIPTION": "140 Spaces"
+				"DESCRIPTION": "Occupany: 112/280 Spaces"
 			},
 	
 			"geometry": {
@@ -18,7 +18,7 @@
 			"properties": {
 				"CARPARK_ID": 2,
 				"NAME": "Science Car Park",
-				"DESCRIPTION": "100 Spaces"
+				"DESCRIPTION": "Occupany: 84/150 Spaces"
 			},
 	
 			"geometry": {
@@ -31,7 +31,7 @@
 			"properties": {
 				"CARPARK_ID": 3,
 				"NAME": "Old Sport Centre Car Park",
-				"DESCRIPTION": "200 Spaces"
+				"DESCRIPTION": "Occupany: 34/80 Spaces"
 			},
 	
 			"geometry": {
@@ -44,7 +44,7 @@
 			"properties": {
 				"CARPARK_ID": 4,
 				"NAME": "Westwood Games Hall Car Park",
-				"DESCRIPTION": "200 Spaces"
+				"DESCRIPTION": "Occupany: 168/200 Spaces"
 			},
 	
 			"geometry": {
@@ -57,7 +57,7 @@
 			"properties": {
 				"CARPARK_ID": 5,
 				"NAME": "Tennis Centre Car Park",
-				"DESCRIPTION": "200 Spaces"
+				"DESCRIPTION": "Occupany: 24/110 Spaces"
 			},
 	
 			"geometry": {
@@ -70,7 +70,7 @@
 			"properties": {
 				"CARPARK_ID": 6,
 				"NAME": "Argent Court Car Park",
-				"DESCRIPTION": "200 Spaces"
+				"DESCRIPTION": "Occupany: 17/70 Spaces"
 			},
 	
 			"geometry": {

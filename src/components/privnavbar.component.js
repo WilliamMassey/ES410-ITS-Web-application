@@ -16,12 +16,6 @@ function PrivNavbar(){
                      <Link className="nav-link" to={"/myaccount"}>My Account</Link>
                   </li>
                   <li className="nav-item">
-                     <Link className="nav-link" to={"/mybookings"}>My Bookings</Link>
-                  </li>
-                  <li className="nav-item">
-                     <Link className="nav-link" to={"/makebookings"}>Make Bookings</Link>
-                  </li>
-                  <li className="nav-item">
                      <Link className="nav-link" to={"/home"}>Logout</Link>
                   </li>
                </ul>

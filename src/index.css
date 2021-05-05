@@ -279,3 +279,33 @@ html,
   padding-top: 20px;
   padding-bottom: 20px;
 }
+
+.location-icon-2 {
+  display: flex;
+  padding-left: 10px;
+}
+
+.booking-wrapper {
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+  display: flex;
+  text-align: left;
+  padding-top: 20px;
+}
+
+.booking-inner {
+  width: 600px;
+  margin: auto;
+  background: #ffffff;
+  box-shadow: 0px 14px 80px rgba(34, 35, 58, 0.2);
+  padding: 30px 45px 20px 45px;
+  border-radius: 15px;
+}
+
+.booking-button-2 {
+  margin-left: 210px;
+  border-radius: 5px;
+  justify-content: center;
+  align-self: center;
+}
